@@ -18,24 +18,24 @@ func QueryTables(t *testing.T) {
 	tableStorageProxy.QueryTables()
 }
 
-func DeleteTable(t *testing.T) {
-	goHaveStorage := New(Account, Key)
-	tableStorageProxy := goHaveStorage.NewTableStorageProxy()
-	tableStorageProxy.DeleteTable(Table)
-}
-
-func TestInsertEntity(t *testing.T) {
+func InsertEntity(t *testing.T) {
   goHaveStorage := New(Account, Key)
   tableStorageProxy := goHaveStorage.NewTableStorageProxy()
 
   entity := &TestEntity{}
-  entity.PartitionKey = "ABC"
-  entity.RowKey = "123"
-  entity.Property1 = "Value1"
+    entity.PartitionKey = "ABC"
+    entity.RowKey = "123"
+    entity.Property1 = "Value1"
 
-  json, _ := json.Marshal(entity)
+    json, _ := json.Marshal(entity)
 
-  tableStorageProxy.InsertEntity(Table, json)
+    tableStorageProxy.InsertEntity(Table, json)
+  }
+
+func TestDeleteTable(t *testing.T) {
+	goHaveStorage := New(Account, Key)
+	tableStorageProxy := goHaveStorage.NewTableStorageProxy()
+	tableStorageProxy.DeleteTable(Table)
 }
 
 type TestEntity struct {
