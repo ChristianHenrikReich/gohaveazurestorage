@@ -52,22 +52,21 @@ func TestQueryEntityWithSelect(t *testing.T) {
   goHaveStorage := New(Account, Key)
   tableStorageProxy := goHaveStorage.NewTableStorageProxy()
 
-  tableStorageProxy.QueryEntity(Table, "ABC", "123", "Property1,Property3")
+  tableStorageProxy.QueryEntity(Table, "ABC", "123", "RowKey,Property1,Property3")
 }
 
-func TestDeleteTable(t *testing.T) {
 func TestQueryEntities(t *testing.T) {
   goHaveStorage := New(Account, Key)
   tableStorageProxy := goHaveStorage.NewTableStorageProxy()
 
-  tableStorageProxy.QueryEntities(Table, "")
+  tableStorageProxy.QueryEntities(Table, "", "")
 }
 
 func TestQueryEntitiesWithSelect(t *testing.T) {
   goHaveStorage := New(Account, Key)
   tableStorageProxy := goHaveStorage.NewTableStorageProxy()
 
-  tableStorageProxy.QueryEntities(Table, "Property1,Property3", "")
+  tableStorageProxy.QueryEntities(Table, "RowKey,Property1,Property3", "")
 }
 
 func TestQueryEntitiesWithTop(t *testing.T) {
@@ -81,9 +80,10 @@ func TestQueryEntitiesWithSelectAndTop(t *testing.T) {
   goHaveStorage := New(Account, Key)
   tableStorageProxy := goHaveStorage.NewTableStorageProxy()
 
-  tableStorageProxy.QueryEntities(Table, "Property1,Property3", "1")
+  tableStorageProxy.QueryEntities(Table, "RowKey,Property1,Property3", "1")
 }
 
+func DeleteTable(t *testing.T) {
 	goHaveStorage := New(Account, Key)
 	tableStorageProxy := goHaveStorage.NewTableStorageProxy()
 	tableStorageProxy.DeleteTable(Table)
