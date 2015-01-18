@@ -20,12 +20,14 @@ type GoHaveStorage interface {
 
 type TableStorageProxy struct {
 	goHaveStorage GoHaveStorage
+	baseUrl string
 }
 
 func New(goHaveStorage GoHaveStorage) *TableStorageProxy {
 	var tableStorageProxy TableStorageProxy
 
 	tableStorageProxy.goHaveStorage = goHaveStorage
+	tableStorageProxy.baseUrl = "https://"+goHaveStorage.GetAccount()+".table.core.windows.net/"
 
 	return &tableStorageProxy
 }
@@ -34,7 +36,7 @@ func (tableStorageProxy *TableStorageProxy) QueryTables() {
 	xmsdate, Authentication := tableStorageProxy.calculateDateAndAuthentication("Tables")
 
 	client := &http.Client{}
-	request, _ := http.NewRequest("GET", "https://"+tableStorageProxy.goHaveStorage.GetAccount()+".table.core.windows.net/Tables", nil)
+	request, _ := http.NewRequest("GET", tableStorageProxy.baseUrl+"Tables", nil)
 	request.Header.Set("Accept", "application/json;odata=nometadata")
 
 	tableStorageProxy.executeRequest(request, client)
@@ -44,7 +46,7 @@ func (tableStorageProxy *TableStorageProxy) DeleteTable(tableName string) {
 	xmsdate, Authentication := tableStorageProxy.calculateDateAndAuthentication("Tables%28%27" + tableName + "%27%29")
 
 	client := &http.Client{}
-	request, _ := http.NewRequest("DELETE", "https://"+tableStorageProxy.goHaveStorage.GetAccount()+".table.core.windows.net/Tables('"+tableName+"')", nil)
+	request, _ := http.NewRequest("DELETE", tableStorageProxy.baseUrl+"Tables('"+tableName+"')", nil)
 	request.Header.Set("Content-Type", "application/atom+xml")
 
 	tableStorageProxy.executeRequest(request, client)
@@ -63,7 +65,7 @@ func (tableStorageProxy *TableStorageProxy) CreateTable(tableName string) {
 	xmsdate, Authentication := tableStorageProxy.calculateDateAndAuthentication("Tables")
 
 	client := &http.Client{}
-	request, _ := http.NewRequest("POST", "https://"+tableStorageProxy.goHaveStorage.GetAccount()+".table.core.windows.net/Tables", bytes.NewBuffer(jsonBytes))
+	request, _ := http.NewRequest("POST", tableStorageProxy.baseUrl+"Tables", bytes.NewBuffer(jsonBytes))
 	request.Header.Set("Accept", "application/json;odata=nometadata")
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("Content-Length", string(len(jsonBytes)))
