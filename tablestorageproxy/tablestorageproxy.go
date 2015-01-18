@@ -33,23 +33,11 @@ func New(goHaveStorage GoHaveStorage) *TableStorageProxy {
 }
 
 func (tableStorageProxy *TableStorageProxy) QueryTables() {
-	target := "Tables"
-
-	client := &http.Client{}
-	request, _ := http.NewRequest("GET", tableStorageProxy.baseUrl+target, nil)
-	request.Header.Set("Accept", "application/json;odata=nometadata")
-
-	tableStorageProxy.executeRequest(request, client, target)
+	tableStorageProxy.get("Tables")
 }
 
 func (tableStorageProxy *TableStorageProxy) QueryEntity(tableName string, partitionKey string, rowKey string) {
-	target := tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29"
-
-	client := &http.Client{}
-	request, _ := http.NewRequest("GET", tableStorageProxy.baseUrl+target, nil)
-	request.Header.Set("Accept", "application/json;odata=nometadata")
-
-		tableStorageProxy.executeRequest(request, client, target)
+	tableStorageProxy.get(tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29")
 }
 
 func (tableStorageProxy *TableStorageProxy) DeleteTable(tableName string) {
@@ -76,6 +64,14 @@ func (tableStorageProxy *TableStorageProxy) CreateTable(tableName string) {
 
 func (tableStorageProxy *TableStorageProxy) InsertEntity(tableName string, json []byte) {
 	tableStorageProxy.postJson(tableName, json)
+}
+
+func (tableStorageProxy *TableStorageProxy) get(target string) {
+	client := &http.Client{}
+	request, _ := http.NewRequest("GET", tableStorageProxy.baseUrl+target, nil)
+	request.Header.Set("Accept", "application/json;odata=nometadata")
+
+	tableStorageProxy.executeRequest(request, client, target)
 }
 
 func (tableStorageProxy *TableStorageProxy) postJson(target string, json []byte) {
