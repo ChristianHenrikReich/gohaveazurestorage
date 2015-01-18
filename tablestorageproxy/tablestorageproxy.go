@@ -73,6 +73,16 @@ func (tableStorageProxy *TableStorageProxy) CreateTable(tableName string) {
 	tableStorageProxy.executeRequest(request, client, target)
 }
 
+func (tableStorageProxy *TableStorageProxy) InsertEntity(tableName string, json []byte) {
+	client := &http.Client{}
+		request, _ := http.NewRequest("POST", tableStorageProxy.baseUrl+tableName, bytes.NewBuffer(json))
+		request.Header.Set("Accept", "application/json;odata=nometadata")
+		request.Header.Set("Content-Type", "application/json")
+		request.Header.Set("Content-Length", string(len(json)))
+
+		tableStorageProxy.executeRequest(request, client, tableName)s
+}
+
 func (tableStorageProxy *TableStorageProxy) executeRequest(request *http.Request, client *http.Client, target string) {
 	xmsdate, Authentication := tableStorageProxy.calculateDateAndAuthentication(target)
 
