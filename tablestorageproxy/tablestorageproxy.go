@@ -60,27 +60,22 @@ func (tableStorageProxy *TableStorageProxy) CreateTable(tableName string) {
 	var createTableArgs CreateTableArgs
 	createTableArgs.TableName = tableName
 
-	jsonBytes, _ := json.Marshal(createTableArgs)
-
-	target := "Tables"
-
-	client := &http.Client{}
-	request, _ := http.NewRequest("POST", tableStorageProxy.baseUrl+target, bytes.NewBuffer(jsonBytes))
-	request.Header.Set("Accept", "application/json;odata=nometadata")
-	request.Header.Set("Content-Type", "application/json")
-	request.Header.Set("Content-Length", string(len(jsonBytes)))
-
-	tableStorageProxy.executeRequest(request, client, target)
+	json, _ := json.Marshal(createTableArgs)
+	tableStorageProxy.postJson("Tables", json)
 }
 
 func (tableStorageProxy *TableStorageProxy) InsertEntity(tableName string, json []byte) {
-	client := &http.Client{}
-		request, _ := http.NewRequest("POST", tableStorageProxy.baseUrl+tableName, bytes.NewBuffer(json))
-		request.Header.Set("Accept", "application/json;odata=nometadata")
-		request.Header.Set("Content-Type", "application/json")
-		request.Header.Set("Content-Length", string(len(json)))
+	tableStorageProxy.postJson(tableName, json)
+}
 
-		tableStorageProxy.executeRequest(request, client, tableName)s
+func (tableStorageProxy *TableStorageProxy) postJson(target string, json []byte) {
+	client := &http.Client{}
+	request, _ := http.NewRequest("POST", tableStorageProxy.baseUrl+target, bytes.NewBuffer(json))
+	request.Header.Set("Accept", "application/json;odata=nometadata")
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("Content-Length", string(len(json)))
+
+	tableStorageProxy.executeRequest(request, client, target)
 }
 
 func (tableStorageProxy *TableStorageProxy) executeRequest(request *http.Request, client *http.Client, target string) {
