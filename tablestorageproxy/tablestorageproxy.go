@@ -33,23 +33,19 @@ func New(goHaveStorage GoHaveStorage) *TableStorageProxy {
 }
 
 func (tableStorageProxy *TableStorageProxy) QueryTables() {
-	xmsdate, Authentication := tableStorageProxy.calculateDateAndAuthentication("Tables")
-
 	client := &http.Client{}
 	request, _ := http.NewRequest("GET", tableStorageProxy.baseUrl+"Tables", nil)
 	request.Header.Set("Accept", "application/json;odata=nometadata")
 
-	tableStorageProxy.executeRequest(request, client)
+	tableStorageProxy.executeRequest(request, client, "Tables")
 }
 
 func (tableStorageProxy *TableStorageProxy) DeleteTable(tableName string) {
-	xmsdate, Authentication := tableStorageProxy.calculateDateAndAuthentication("Tables%28%27" + tableName + "%27%29")
-
 	client := &http.Client{}
 	request, _ := http.NewRequest("DELETE", tableStorageProxy.baseUrl+"Tables('"+tableName+"')", nil)
 	request.Header.Set("Content-Type", "application/atom+xml")
 
-	tableStorageProxy.executeRequest(request, client)
+	tableStorageProxy.executeRequest(request, client, "Tables%28%27" + tableName + "%27%29")
 }
 
 type CreateTableArgs struct {
@@ -62,18 +58,18 @@ func (tableStorageProxy *TableStorageProxy) CreateTable(tableName string) {
 
 	jsonBytes, _ := json.Marshal(createTableArgs)
 
-	xmsdate, Authentication := tableStorageProxy.calculateDateAndAuthentication("Tables")
-
 	client := &http.Client{}
 	request, _ := http.NewRequest("POST", tableStorageProxy.baseUrl+"Tables", bytes.NewBuffer(jsonBytes))
 	request.Header.Set("Accept", "application/json;odata=nometadata")
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("Content-Length", string(len(jsonBytes)))
 
-	tableStorageProxy.executeRequest(request, client)
+	tableStorageProxy.executeRequest(request, client, "Tables")
 }
 
-func (tableStorageProxy *TableStorageProxy) executeRequest(request *http.Request, client *http.Client) {
+func (tableStorageProxy *TableStorageProxy) executeRequest(request *http.Request, client *http.Client, target string) {
+	xmsdate, Authentication := tableStorageProxy.calculateDateAndAuthentication(target)
+
 	request.Header.Set("x-ms-date", xmsdate)
 	request.Header.Set("x-ms-version", "2013-08-15")
 	request.Header.Set("Authorization", Authentication)
