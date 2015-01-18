@@ -44,9 +44,9 @@ func (tableStorageProxy *TableStorageProxy) QueryEntity(tableName string, partit
 	tableStorageProxy.executeRequest(request, client, tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29")
 }
 
-func (tableStorageProxy *TableStorageProxy) QueryEntities(tableName string, selects string) {
+func (tableStorageProxy *TableStorageProxy) QueryEntities(tableName string, selects string, top string) {
 	client := &http.Client{}
-	request, _ := http.NewRequest("GET", tableStorageProxy.baseUrl+tableName+"?$select=" + selects, nil)
+	request, _ := http.NewRequest("GET", tableStorageProxy.baseUrl+tableName+"?$select=" + selects+"&$top="+top, nil)
 	request.Header.Set("Accept", "application/json;odata=nometadata")
 
 	tableStorageProxy.executeRequest(request, client, tableName)
