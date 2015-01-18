@@ -33,19 +33,23 @@ func New(goHaveStorage GoHaveStorage) *TableStorageProxy {
 }
 
 func (tableStorageProxy *TableStorageProxy) QueryTables() {
+	target := "Tables"
+
 	client := &http.Client{}
-	request, _ := http.NewRequest("GET", tableStorageProxy.baseUrl+"Tables", nil)
+	request, _ := http.NewRequest("GET", tableStorageProxy.baseUrl+target, nil)
 	request.Header.Set("Accept", "application/json;odata=nometadata")
 
-	tableStorageProxy.executeRequest(request, client, "Tables")
+	tableStorageProxy.executeRequest(request, client, target)
 }
 
 func (tableStorageProxy *TableStorageProxy) DeleteTable(tableName string) {
+	target := "Tables%28%27" + tableName + "%27%29"
+
 	client := &http.Client{}
-	request, _ := http.NewRequest("DELETE", tableStorageProxy.baseUrl+"Tables('"+tableName+"')", nil)
+	request, _ := http.NewRequest("DELETE", tableStorageProxy.baseUrl+target, nil)
 	request.Header.Set("Content-Type", "application/atom+xml")
 
-	tableStorageProxy.executeRequest(request, client, "Tables%28%27" + tableName + "%27%29")
+	tableStorageProxy.executeRequest(request, client, target)
 }
 
 type CreateTableArgs struct {
@@ -58,13 +62,15 @@ func (tableStorageProxy *TableStorageProxy) CreateTable(tableName string) {
 
 	jsonBytes, _ := json.Marshal(createTableArgs)
 
+	target := "Tables"
+
 	client := &http.Client{}
-	request, _ := http.NewRequest("POST", tableStorageProxy.baseUrl+"Tables", bytes.NewBuffer(jsonBytes))
+	request, _ := http.NewRequest("POST", tableStorageProxy.baseUrl+target, bytes.NewBuffer(jsonBytes))
 	request.Header.Set("Accept", "application/json;odata=nometadata")
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("Content-Length", string(len(jsonBytes)))
 
-	tableStorageProxy.executeRequest(request, client, "Tables")
+	tableStorageProxy.executeRequest(request, client, target)
 }
 
 func (tableStorageProxy *TableStorageProxy) executeRequest(request *http.Request, client *http.Client, target string) {
