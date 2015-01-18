@@ -35,9 +35,6 @@ func (tableStorageProxy *TableStorageProxy) QueryTables() {
 
 	client := &http.Client{}
 		request, _ := http.NewRequest("GET", "https://" + tableStorageProxy.goHaveStorage.GetAccount() + ".table.core.windows.net/Tables", nil)
-		request.Header.Set("x-ms-date", xmsdate)
-		request.Header.Set("x-ms-version", "2013-08-15")
-		request.Header.Set("Authorization", Authentication)
 		request.Header.Set("Accept","application/json;odata=nometadata")
 
 		tableStorageProxy.executeRequest(request, client)
@@ -48,9 +45,6 @@ func (tableStorageProxy *TableStorageProxy) DeleteTable(tableName string) {
 
 	client := &http.Client{}
 	request, _ := http.NewRequest("DELETE", "https://" + tableStorageProxy.goHaveStorage.GetAccount() + ".table.core.windows.net/Tables('" + tableName + "')", nil)
-	request.Header.Set("x-ms-date", xmsdate)
-	request.Header.Set("x-ms-version", "2013-08-15")
-	request.Header.Set("Authorization", Authentication)
 	request.Header.Set("Content-Type","application/atom+xml")
 
 	tableStorageProxy.executeRequest(request, client)
@@ -70,9 +64,6 @@ func (tableStorageProxy *TableStorageProxy) CreateTable(tableName string) {
 
 	client := &http.Client{}
 	request, _ := http.NewRequest("POST", "https://" + tableStorageProxy.goHaveStorage.GetAccount() + ".table.core.windows.net/Tables", bytes.NewBuffer(jsonBytes))
-	request.Header.Set("x-ms-date", xmsdate)
-	request.Header.Set("x-ms-version", "2013-08-15")
-	request.Header.Set("Authorization", Authentication)
 	request.Header.Set("Accept","application/json;odata=nometadata")
 	request.Header.Set("Content-Type","application/json")
 	request.Header.Set("Content-Length",string(len(jsonBytes)))
@@ -81,6 +72,10 @@ func (tableStorageProxy *TableStorageProxy) CreateTable(tableName string) {
 }
 
 func (tableStorageProxy *TableStorageProxy) executeRequest(request *http.Request, client *http.Client) {
+	request.Header.Set("x-ms-date", xmsdate)
+	request.Header.Set("x-ms-version", "2013-08-15")
+	request.Header.Set("Authorization", Authentication)
+
 	requestDump, _ := httputil.DumpRequest(request, true)
 
 	fmt.Printf("Request: %s\n", requestDump)
