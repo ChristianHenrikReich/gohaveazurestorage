@@ -36,17 +36,17 @@ func (tableStorageProxy *TableStorageProxy) QueryTables() {
 	tableStorageProxy.get("Tables")
 }
 
-func (tableStorageProxy *TableStorageProxy) QueryEntity(tableName string, partitionKey string, rowKey string, filter string) {
+func (tableStorageProxy *TableStorageProxy) QueryEntity(tableName string, partitionKey string, rowKey string, selects string) {
 	client := &http.Client{}
-	request, _ := http.NewRequest("GET", tableStorageProxy.baseUrl+tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29?$select="+filter, nil)
+	request, _ := http.NewRequest("GET", tableStorageProxy.baseUrl+tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29?$select="+selects, nil)
 	request.Header.Set("Accept", "application/json;odata=nometadata")
 
 	tableStorageProxy.executeRequest(request, client, tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29")
 }
 
-func (tableStorageProxy *TableStorageProxy) QueryEntities(tableName string, filter string) {
+func (tableStorageProxy *TableStorageProxy) QueryEntities(tableName string, selects string) {
 	client := &http.Client{}
-	request, _ := http.NewRequest("GET", tableStorageProxy.baseUrl+tableName+"?$select=" + filter, nil)
+	request, _ := http.NewRequest("GET", tableStorageProxy.baseUrl+tableName+"?$select=" + selects, nil)
 	request.Header.Set("Accept", "application/json;odata=nometadata")
 
 	tableStorageProxy.executeRequest(request, client, tableName)
