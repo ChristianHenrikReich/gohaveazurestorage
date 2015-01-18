@@ -42,6 +42,16 @@ func (tableStorageProxy *TableStorageProxy) QueryTables() {
 	tableStorageProxy.executeRequest(request, client, target)
 }
 
+func (tableStorageProxy *TableStorageProxy) QueryEntity(tableName string, partitionKey string, rowKey string) {
+	target := tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29"
+
+	client := &http.Client{}
+	request, _ := http.NewRequest("GET", tableStorageProxy.baseUrl+target, nil)
+	request.Header.Set("Accept", "application/json;odata=nometadata")
+
+		tableStorageProxy.executeRequest(request, client, target)
+}
+
 func (tableStorageProxy *TableStorageProxy) DeleteTable(tableName string) {
 	target := "Tables%28%27" + tableName + "%27%29"
 

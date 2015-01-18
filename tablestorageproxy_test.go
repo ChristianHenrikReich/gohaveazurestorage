@@ -32,6 +32,13 @@ func InsertEntity(t *testing.T) {
     tableStorageProxy.InsertEntity(Table, json)
   }
 
+func TestQueryEntity(t *testing.T) {
+  goHaveStorage := New(Account, Key)
+  tableStorageProxy := goHaveStorage.NewTableStorageProxy()
+
+  tableStorageProxy.QueryEntity(Table, "ABC", "123")
+}
+
 func TestDeleteTable(t *testing.T) {
 	goHaveStorage := New(Account, Key)
 	tableStorageProxy := goHaveStorage.NewTableStorageProxy()
