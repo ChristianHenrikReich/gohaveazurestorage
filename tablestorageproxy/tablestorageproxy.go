@@ -1,20 +1,20 @@
 package tablestorageproxy
 
 import (
+	"bytes"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
-	"fmt"
-	"time"
-	"strings"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httputil"
-	"bytes"
-	)
+	"strings"
+	"time"
+)
 
 type GoHaveStorage interface {
-	GetKey()	[]byte
+	GetKey() []byte
 	GetAccount() string
 }
 
@@ -34,18 +34,18 @@ func (tableStorageProxy *TableStorageProxy) QueryTables() {
 	xmsdate, Authentication := tableStorageProxy.calculateDateAndAuthentication("Tables")
 
 	client := &http.Client{}
-		request, _ := http.NewRequest("GET", "https://" + tableStorageProxy.goHaveStorage.GetAccount() + ".table.core.windows.net/Tables", nil)
-		request.Header.Set("Accept","application/json;odata=nometadata")
+	request, _ := http.NewRequest("GET", "https://"+tableStorageProxy.goHaveStorage.GetAccount()+".table.core.windows.net/Tables", nil)
+	request.Header.Set("Accept", "application/json;odata=nometadata")
 
-		tableStorageProxy.executeRequest(request, client)
-	}
+	tableStorageProxy.executeRequest(request, client)
+}
 
 func (tableStorageProxy *TableStorageProxy) DeleteTable(tableName string) {
 	xmsdate, Authentication := tableStorageProxy.calculateDateAndAuthentication("Tables%28%27" + tableName + "%27%29")
 
 	client := &http.Client{}
-	request, _ := http.NewRequest("DELETE", "https://" + tableStorageProxy.goHaveStorage.GetAccount() + ".table.core.windows.net/Tables('" + tableName + "')", nil)
-	request.Header.Set("Content-Type","application/atom+xml")
+	request, _ := http.NewRequest("DELETE", "https://"+tableStorageProxy.goHaveStorage.GetAccount()+".table.core.windows.net/Tables('"+tableName+"')", nil)
+	request.Header.Set("Content-Type", "application/atom+xml")
 
 	tableStorageProxy.executeRequest(request, client)
 }
@@ -63,10 +63,10 @@ func (tableStorageProxy *TableStorageProxy) CreateTable(tableName string) {
 	xmsdate, Authentication := tableStorageProxy.calculateDateAndAuthentication("Tables")
 
 	client := &http.Client{}
-	request, _ := http.NewRequest("POST", "https://" + tableStorageProxy.goHaveStorage.GetAccount() + ".table.core.windows.net/Tables", bytes.NewBuffer(jsonBytes))
-	request.Header.Set("Accept","application/json;odata=nometadata")
-	request.Header.Set("Content-Type","application/json")
-	request.Header.Set("Content-Length",string(len(jsonBytes)))
+	request, _ := http.NewRequest("POST", "https://"+tableStorageProxy.goHaveStorage.GetAccount()+".table.core.windows.net/Tables", bytes.NewBuffer(jsonBytes))
+	request.Header.Set("Accept", "application/json;odata=nometadata")
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("Content-Length", string(len(jsonBytes)))
 
 	tableStorageProxy.executeRequest(request, client)
 }

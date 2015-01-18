@@ -7,19 +7,19 @@ var Account = ""
 var Table = "TestTable"
 
 func CreateTable(t *testing.T) {
-  goHaveStorage := New(Account, Key)
-  tableStorageProxy := goHaveStorage.NewTableStorageProxy()
-  tableStorageProxy.CreateTable(Table)
+	goHaveStorage := New(Account, Key)
+	tableStorageProxy := goHaveStorage.NewTableStorageProxy()
+	tableStorageProxy.CreateTable(Table)
 }
 
 func QueryTables(t *testing.T) {
-  goHaveStorage := New(Account, Key)
-  tableStorageProxy := goHaveStorage.NewTableStorageProxy()
-  tableStorageProxy.QueryTables()
+	goHaveStorage := New(Account, Key)
+	tableStorageProxy := goHaveStorage.NewTableStorageProxy()
+	tableStorageProxy.QueryTables()
 }
 
 func DeleteTable(t *testing.T) {
-  goHaveStorage := New(Account, Key)
-  tableStorageProxy := goHaveStorage.NewTableStorageProxy()
-  tableStorageProxy.DeleteTable(Table)
+	goHaveStorage := New(Account, Key)
+	tableStorageProxy := goHaveStorage.NewTableStorageProxy()
+	tableStorageProxy.DeleteTable(Table)
 }
