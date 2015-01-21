@@ -81,28 +81,13 @@ func (tableStorageProxy *TableStorageProxy) InsertEntity(tableName string, json 
 	tableStorageProxy.executeCommonRequest("POST", tableName, "", json, false, false, false)
 }
 
-func (tableStorageProxy *TableStorageProxy) executeRequest(request *http.Request, client *http.Client, target string) {
-	xmsdate, Authentication := tableStorageProxy.calculateDateAndAuthentication(target)
-
-	request.Header.Set("x-ms-date", xmsdate)
-	request.Header.Set("x-ms-version", "2013-08-15")
-	request.Header.Set("Authorization", Authentication)
-
-	requestDump, _ := httputil.DumpRequest(request, true)
-
-	fmt.Printf("Request: %s\n", requestDump)
-
-	response, _ := client.Do(request)
-
-	responseDump, _ := httputil.DumpResponse(response, true)
-	fmt.Printf("Response: %s\n", responseDump)
-}
-
 func (tableStorageProxy *TableStorageProxy)  executeEntityRequest(httpVerb string, tableName string, partitionKey string, rowKey string, json []byte, useIfMatch bool) {
 	tableStorageProxy.executeCommonRequest(httpVerb, tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29", "", json, useIfMatch, false, false)
 }
 
 func (tableStorageProxy *TableStorageProxy)  executeCommonRequest(httpVerb string, target string, query string, json []byte, useIfMatch bool, useAccept bool, useContentTypeXML bool) {
+	xmsdate, Authentication := tableStorageProxy.calculateDateAndAuthentication(target)
+
 	client := &http.Client{}
 	request, _ := http.NewRequest(httpVerb, tableStorageProxy.baseUrl+target+query, bytes.NewBuffer(json))
 
@@ -123,7 +108,18 @@ func (tableStorageProxy *TableStorageProxy)  executeCommonRequest(httpVerb strin
 		request.Header.Set("Accept", "application/json;odata=nometadata")
 	}
 
-	tableStorageProxy.executeRequest(request, client, target)
+	request.Header.Set("x-ms-date", xmsdate)
+	request.Header.Set("x-ms-version", "2013-08-15")
+	request.Header.Set("Authorization", Authentication)
+
+	requestDump, _ := httputil.DumpRequest(request, true)
+
+	fmt.Printf("Request: %s\n", requestDump)
+
+	response, _ := client.Do(request)
+
+	responseDump, _ := httputil.DumpResponse(response, true)
+	fmt.Printf("Response: %s\n", responseDump)
 }
 
 func (tableStorageProxy *TableStorageProxy) calculateDateAndAuthentication(target string) (string, string) {
