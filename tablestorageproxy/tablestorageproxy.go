@@ -63,6 +63,17 @@ func (tableStorageProxy *TableStorageProxy) UpdateEntity(tableName string, parti
 	tableStorageProxy.executeRequest(request, client, tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29")
 }
 
+func (tableStorageProxy *TableStorageProxy) MergeEntity(tableName string, partitionKey string, rowKey string, json []byte) {
+	client := &http.Client{}
+		request, _ := http.NewRequest("MERGE", tableStorageProxy.baseUrl+tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29",  bytes.NewBuffer(json))
+		request.Header.Set("If-Match", "*")
+		request.Header.Set("Accept", "application/json;odata=nometadata")
+		request.Header.Set("Content-Type", "application/json")
+		request.Header.Set("Content-Length", string(len(json)))
+
+		tableStorageProxy.executeRequest(request, client, tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29")
+}
+
 func (tableStorageProxy *TableStorageProxy) QueryEntities(tableName string, selects string, filter string, top string) {
 	client := &http.Client{}
 	request, _ := http.NewRequest("GET", tableStorageProxy.baseUrl+tableName +"?$filter="+filter + "&$select=" + selects+"&$top="+top, nil)
