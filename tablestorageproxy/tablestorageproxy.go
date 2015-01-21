@@ -37,11 +37,7 @@ func (tableStorageProxy *TableStorageProxy) QueryTables() {
 }
 
 func (tableStorageProxy *TableStorageProxy) QueryEntity(tableName string, partitionKey string, rowKey string, selects string) {
-	client := &http.Client{}
-	request, _ := http.NewRequest("GET", tableStorageProxy.baseUrl+tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29?$select="+selects, nil)
-	request.Header.Set("Accept", "application/json;odata=nometadata")
-
-	tableStorageProxy.executeRequest(request, client, tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29")
+	tableStorageProxy.get(tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29", "?$select="+selects)
 }
 
 func (tableStorageProxy *TableStorageProxy) DeleteEntity(tableName string, partitionKey string, rowKey string) {
@@ -80,11 +76,7 @@ func (tableStorageProxy *TableStorageProxy)  executeEntityRequest(httpVerb strin
 }
 
 func (tableStorageProxy *TableStorageProxy) QueryEntities(tableName string, selects string, filter string, top string) {
-	client := &http.Client{}
-	request, _ := http.NewRequest("GET", tableStorageProxy.baseUrl+tableName +"?$filter="+filter + "&$select=" + selects+"&$top="+top, nil)
-	request.Header.Set("Accept", "application/json;odata=nometadata")
-
-	tableStorageProxy.executeRequest(request, client, tableName)
+	tableStorageProxy.get(tableName, "?$filter="+filter + "&$select=" + selects+"&$top="+top)
 }
 
 func (tableStorageProxy *TableStorageProxy) DeleteTable(tableName string) {
