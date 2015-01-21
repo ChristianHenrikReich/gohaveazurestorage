@@ -74,11 +74,11 @@ type CreateTableArgs struct {
 
 func (tableStorageProxy *TableStorageProxy) CreateTable(tableName string) {
 	json, _ := json.Marshal(CreateTableArgs{TableName: tableName})
-	tableStorageProxy.executeCommonRequest("POST", "Tables", "", json, false, false, false)
+	tableStorageProxy.executeCommonRequest("POST", "Tables", "", json, false, true, false)
 }
 
 func (tableStorageProxy *TableStorageProxy) InsertEntity(tableName string, json []byte) {
-	tableStorageProxy.executeCommonRequest("POST", tableName, "", json, false, false, false)
+	tableStorageProxy.executeCommonRequest("POST", tableName, "", json, false, true, false)
 }
 
 func (tableStorageProxy *TableStorageProxy)  executeEntityRequest(httpVerb string, tableName string, partitionKey string, rowKey string, json []byte, useIfMatch bool) {
