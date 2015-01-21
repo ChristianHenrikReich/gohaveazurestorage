@@ -40,6 +40,10 @@ func (tableStorageProxy *TableStorageProxy) QueryEntity(tableName string, partit
 	tableStorageProxy.get(tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29", "?$select="+selects)
 }
 
+func (tableStorageProxy *TableStorageProxy) QueryEntities(tableName string, selects string, filter string, top string) {
+	tableStorageProxy.get(tableName, "?$filter="+filter + "&$select=" + selects+"&$top="+top)
+}
+
 func (tableStorageProxy *TableStorageProxy) DeleteEntity(tableName string, partitionKey string, rowKey string) {
 	tableStorageProxy.executeEntityRequest("DELETE",tableName, partitionKey, rowKey, nil, true)
 }
@@ -58,25 +62,6 @@ func (tableStorageProxy *TableStorageProxy) InsertOrMergeEntity(tableName string
 
 func (tableStorageProxy *TableStorageProxy) InsertOrReplaceEntity(tableName string, partitionKey string, rowKey string, json []byte) {
 	tableStorageProxy.executeEntityRequest("PUT",tableName, partitionKey, rowKey, json, false)
-}
-
-func (tableStorageProxy *TableStorageProxy)  executeEntityRequest(httpVerb string, tableName string, partitionKey string, rowKey string, json []byte, useIfMatch bool) {
-	client := &http.Client{}
-	request, _ := http.NewRequest(httpVerb, tableStorageProxy.baseUrl+tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29",  bytes.NewBuffer(json))
-
-	if json != nil {
-		addPayloadHeaders(request, len(json))
-	}
-
-	if useIfMatch {
-		request.Header.Set("If-Match", "*")
-	}
-
-	tableStorageProxy.executeRequest(request, client, tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29")
-}
-
-func (tableStorageProxy *TableStorageProxy) QueryEntities(tableName string, selects string, filter string, top string) {
-	tableStorageProxy.get(tableName, "?$filter="+filter + "&$select=" + selects+"&$top="+top)
 }
 
 func (tableStorageProxy *TableStorageProxy) DeleteTable(tableName string) {
@@ -141,6 +126,21 @@ func (tableStorageProxy *TableStorageProxy) executeRequest(request *http.Request
 
 	responseDump, _ := httputil.DumpResponse(response, true)
 	fmt.Printf("Response: %s\n", responseDump)
+}
+
+func (tableStorageProxy *TableStorageProxy)  executeEntityRequest(httpVerb string, tableName string, partitionKey string, rowKey string, json []byte, useIfMatch bool) {
+	client := &http.Client{}
+	request, _ := http.NewRequest(httpVerb, tableStorageProxy.baseUrl+tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29",  bytes.NewBuffer(json))
+
+	if json != nil {
+		addPayloadHeaders(request, len(json))
+	}
+
+	if useIfMatch {
+		request.Header.Set("If-Match", "*")
+	}
+
+	tableStorageProxy.executeRequest(request, client, tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29")
 }
 
 func (tableStorageProxy *TableStorageProxy) calculateDateAndAuthentication(target string) (string, string) {
