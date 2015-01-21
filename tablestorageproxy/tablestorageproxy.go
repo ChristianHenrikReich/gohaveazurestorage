@@ -126,8 +126,12 @@ func (tableStorageProxy *TableStorageProxy) executeRequest(request *http.Request
 }
 
 func (tableStorageProxy *TableStorageProxy)  executeEntityRequest(httpVerb string, tableName string, partitionKey string, rowKey string, json []byte, useIfMatch bool) {
+	tableStorageProxy.executeCommonRequest(httpVerb, tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29", "", json, useIfMatch)
+}
+
+func (tableStorageProxy *TableStorageProxy)  executeCommonRequest(httpVerb string, target string, query string, json []byte, useIfMatch bool) {
 	client := &http.Client{}
-	request, _ := http.NewRequest(httpVerb, tableStorageProxy.baseUrl+tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29",  bytes.NewBuffer(json))
+	request, _ := http.NewRequest(httpVerb, tableStorageProxy.baseUrl+target+query, bytes.NewBuffer(json))
 
 	if json != nil {
 		addPayloadHeaders(request, len(json))
@@ -137,7 +141,7 @@ func (tableStorageProxy *TableStorageProxy)  executeEntityRequest(httpVerb strin
 		request.Header.Set("If-Match", "*")
 	}
 
-	tableStorageProxy.executeRequest(request, client, tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29")
+	tableStorageProxy.executeRequest(request, client, target)
 }
 
 func (tableStorageProxy *TableStorageProxy) calculateDateAndAuthentication(target string) (string, string) {
