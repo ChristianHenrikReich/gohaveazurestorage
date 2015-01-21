@@ -71,17 +71,24 @@ func (tableStorageProxy *TableStorageProxy) MergeEntity(tableName string, partit
 }
 
 func (tableStorageProxy *TableStorageProxy) InsertOrMergeEntity(tableName string, partitionKey string, rowKey string, json []byte) {
-	tableStorageProxy.executeEntityRequest("MERGE",tableName, partitionKey, rowKey, json)
+	tableStorageProxy.executeEntityRequest("MERGE",tableName, partitionKey, rowKey, json, false)
 }
 
 func (tableStorageProxy *TableStorageProxy) InsertOrReplaceEntity(tableName string, partitionKey string, rowKey string, json []byte) {
-	tableStorageProxy.executeEntityRequest("PUT",tableName, partitionKey, rowKey, json)
+	tableStorageProxy.executeEntityRequest("PUT",tableName, partitionKey, rowKey, json, false)
 }
 
-func (tableStorageProxy *TableStorageProxy)  executeEntityRequest(httpVerb string, tableName string, partitionKey string, rowKey string, json []byte) {
+func (tableStorageProxy *TableStorageProxy)  executeEntityRequest(httpVerb string, tableName string, partitionKey string, rowKey string, json []byte, useIfMatch bool) {
 	client := &http.Client{}
 	request, _ := http.NewRequest(httpVerb, tableStorageProxy.baseUrl+tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29",  bytes.NewBuffer(json))
-	addPayloadHeaders(request, len(json))
+
+	if json != nil {
+		addPayloadHeaders(request, len(json))
+	}
+
+	if useIfMatch {
+		request.Header.Set("If-Match", "*")
+	}
 
 	tableStorageProxy.executeRequest(request, client, tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29")
 }
