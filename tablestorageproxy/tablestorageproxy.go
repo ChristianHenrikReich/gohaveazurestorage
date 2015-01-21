@@ -79,10 +79,7 @@ type CreateTableArgs struct {
 }
 
 func (tableStorageProxy *TableStorageProxy) CreateTable(tableName string) {
-	var createTableArgs CreateTableArgs
-	createTableArgs.TableName = tableName
-
-	json, _ := json.Marshal(createTableArgs)
+	json, _ := json.Marshal(CreateTableArgs{TableName: tableName})
 	tableStorageProxy.postJson("Tables", json)
 }
 
