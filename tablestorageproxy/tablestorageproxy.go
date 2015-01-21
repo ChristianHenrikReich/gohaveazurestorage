@@ -33,15 +33,15 @@ func New(goHaveStorage GoHaveStorage) *TableStorageProxy {
 }
 
 func (tableStorageProxy *TableStorageProxy) QueryTables() {
-	tableStorageProxy.get("Tables", "")
+	tableStorageProxy.executeCommonRequest("GET", "Tables", "", nil, false)
 }
 
 func (tableStorageProxy *TableStorageProxy) QueryEntity(tableName string, partitionKey string, rowKey string, selects string) {
-	tableStorageProxy.get(tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29", "?$select="+selects)
+	tableStorageProxy.executeCommonRequest("GET", tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29", "?$select="+selects, nil, false)
 }
 
 func (tableStorageProxy *TableStorageProxy) QueryEntities(tableName string, selects string, filter string, top string) {
-	tableStorageProxy.get(tableName, "?$filter="+filter + "&$select=" + selects+"&$top="+top)
+	tableStorageProxy.executeCommonRequest("GET", tableName, "?$filter="+filter + "&$select=" + selects+"&$top="+top, nil, false)
 }
 
 func (tableStorageProxy *TableStorageProxy) DeleteEntity(tableName string, partitionKey string, rowKey string) {
@@ -85,14 +85,6 @@ func (tableStorageProxy *TableStorageProxy) CreateTable(tableName string) {
 
 func (tableStorageProxy *TableStorageProxy) InsertEntity(tableName string, json []byte) {
 	tableStorageProxy.executeCommonRequest("POST", tableName, "", json, false)
-}
-
-func (tableStorageProxy *TableStorageProxy) get(target string, query string) {
-	client := &http.Client{}
-	request, _ := http.NewRequest("GET", tableStorageProxy.baseUrl+target + query, nil)
-	request.Header.Set("Accept", "application/json;odata=nometadata")
-
-	tableStorageProxy.executeRequest(request, client, target)
 }
 
 func addPayloadHeaders(request *http.Request, bodyLength int) {
