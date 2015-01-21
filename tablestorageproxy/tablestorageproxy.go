@@ -80,25 +80,17 @@ type CreateTableArgs struct {
 
 func (tableStorageProxy *TableStorageProxy) CreateTable(tableName string) {
 	json, _ := json.Marshal(CreateTableArgs{TableName: tableName})
-	tableStorageProxy.postJson("Tables", json)
+	tableStorageProxy.executeCommonRequest("POST", "Tables", "", json, false)
 }
 
 func (tableStorageProxy *TableStorageProxy) InsertEntity(tableName string, json []byte) {
-	tableStorageProxy.postJson(tableName, json)
+	tableStorageProxy.executeCommonRequest("POST", tableName, "", json, false)
 }
 
 func (tableStorageProxy *TableStorageProxy) get(target string, query string) {
 	client := &http.Client{}
 	request, _ := http.NewRequest("GET", tableStorageProxy.baseUrl+target + query, nil)
 	request.Header.Set("Accept", "application/json;odata=nometadata")
-
-	tableStorageProxy.executeRequest(request, client, target)
-}
-
-func (tableStorageProxy *TableStorageProxy) postJson(target string, json []byte) {
-	client := &http.Client{}
-	request, _ := http.NewRequest("POST", tableStorageProxy.baseUrl+target, bytes.NewBuffer(json))
-	addPayloadHeaders(request, len(json))
 
 	tableStorageProxy.executeRequest(request, client, target)
 }
