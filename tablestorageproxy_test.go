@@ -8,7 +8,7 @@ var Key = ""
 var Account = ""
 var Table = "TestTable"
 
-func CreateTable(t *testing.T) {
+func TestCreateTable(t *testing.T) {
 	goHaveStorage := New(Account, Key)
 	tableStorageProxy := goHaveStorage.NewTableStorageProxy()
 	tableStorageProxy.CreateTable(Table)
@@ -20,7 +20,7 @@ func TestQueryTables(t *testing.T) {
 	tableStorageProxy.QueryTables()
 }
 
-func InsertEntity(t *testing.T) {
+func TestInsertEntity(t *testing.T) {
   goHaveStorage := New(Account, Key)
   tableStorageProxy := goHaveStorage.NewTableStorageProxy()
 
@@ -159,7 +159,7 @@ func TestInsertOrReplaceEntity(t *testing.T) {
   tableStorageProxy.InsertOrReplaceEntity(Table, "ABC", "456", json)
 }
 
-func DeleteTable(t *testing.T) {
+func TestDeleteTable(t *testing.T) {
 	goHaveStorage := New(Account, Key)
 	tableStorageProxy := goHaveStorage.NewTableStorageProxy()
 	tableStorageProxy.DeleteTable(Table)
