@@ -44,6 +44,14 @@ func (tableStorageProxy *TableStorageProxy) QueryEntity(tableName string, partit
 	tableStorageProxy.executeRequest(request, client, tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29")
 }
 
+func (tableStorageProxy *TableStorageProxy) DeleteEntity(tableName string, partitionKey string, rowKey string) {
+	client := &http.Client{}
+	request, _ := http.NewRequest("DELETE", tableStorageProxy.baseUrl+tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29", nil)
+	request.Header.Set("If-Match", "*")
+
+	tableStorageProxy.executeRequest(request, client, tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29")
+}
+
 func (tableStorageProxy *TableStorageProxy) QueryEntities(tableName string, selects string, filter string, top string) {
 	client := &http.Client{}
 	request, _ := http.NewRequest("GET", tableStorageProxy.baseUrl+tableName +"?$filter="+filter + "&$select=" + selects+"&$top="+top, nil)

@@ -1,7 +1,9 @@
 package gohavestorage
 
-import "testing"
-
+import (
+  "testing"
+  "encoding/json"
+)
 var Key = ""
 var Account = ""
 var Table = "TestTable"
@@ -12,7 +14,7 @@ func CreateTable(t *testing.T) {
 	tableStorageProxy.CreateTable(Table)
 }
 
-func QueryTables(t *testing.T) {
+func TestQueryTables(t *testing.T) {
 	goHaveStorage := New(Account, Key)
 	tableStorageProxy := goHaveStorage.NewTableStorageProxy()
 	tableStorageProxy.QueryTables()
@@ -88,6 +90,13 @@ func TestQueryEntitiesWithSelectAndFilterAndTop(t *testing.T) {
   tableStorageProxy := goHaveStorage.NewTableStorageProxy()
 
   tableStorageProxy.QueryEntities(Table, "RowKey,Property1,Property3", "RowKey%20gt%20'123'", "1")
+}
+
+func TestDeleteEntity(t *testing.T) {
+  goHaveStorage := New(Account, Key)
+  tableStorageProxy := goHaveStorage.NewTableStorageProxy()
+
+  tableStorageProxy.DeleteEntity(Table, "ABC", "123")
 }
 
 func DeleteTable(t *testing.T) {
