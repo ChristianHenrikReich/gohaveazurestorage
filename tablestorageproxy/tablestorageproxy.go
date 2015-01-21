@@ -81,6 +81,15 @@ func (tableStorageProxy *TableStorageProxy) InsertOrMergeEntity(tableName string
 	tableStorageProxy.executeRequest(request, client, tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29")
 }
 
+func (tableStorageProxy *TableStorageProxy) InsertOrReplaceEntity(tableName string, partitionKey string, rowKey string, json []byte) {
+	client := &http.Client{}
+		request, _ := http.NewRequest("PUT", tableStorageProxy.baseUrl+tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29",  bytes.NewBuffer(json))
+		request.Header.Set("Accept", "application/json;odata=nometadata")
+		addPayloadHeaders(request, len(json))
+
+		tableStorageProxy.executeRequest(request, client, tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29")
+	}
+
 func (tableStorageProxy *TableStorageProxy) QueryEntities(tableName string, selects string, filter string, top string) {
 	client := &http.Client{}
 	request, _ := http.NewRequest("GET", tableStorageProxy.baseUrl+tableName +"?$filter="+filter + "&$select=" + selects+"&$top="+top, nil)

@@ -143,6 +143,22 @@ func TestInsertOrMergeEntity(t *testing.T) {
     json, _ := json.Marshal(entity)
     tableStorageProxy.InsertOrMergeEntity(Table, "ABC", "456", json)
   }
+
+func TestInsertOrReplaceEntity(t *testing.T) {
+  goHaveStorage := New(Account, Key)
+  tableStorageProxy := goHaveStorage.NewTableStorageProxy()
+
+  entity := &TestEntity{}
+  entity.PartitionKey = "ABC"
+  entity.RowKey = "123"
+  entity.Property1 = "Value1"
+  entity.Property2 = "Value2"
+  entity.Property3 = "Value3"
+
+  json, _ := json.Marshal(entity)
+  tableStorageProxy.InsertOrReplaceEntity(Table, "ABC", "456", json)
+}
+
 func DeleteTable(t *testing.T) {
 	goHaveStorage := New(Account, Key)
 	tableStorageProxy := goHaveStorage.NewTableStorageProxy()
