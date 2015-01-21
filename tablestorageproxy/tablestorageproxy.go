@@ -57,8 +57,7 @@ func (tableStorageProxy *TableStorageProxy) UpdateEntity(tableName string, parti
 	request, _ := http.NewRequest("PUT", tableStorageProxy.baseUrl+tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29",  bytes.NewBuffer(json))
 	request.Header.Set("If-Match", "*")
 	request.Header.Set("Accept", "application/json;odata=nometadata")
-	request.Header.Set("Content-Type", "application/json")
-	request.Header.Set("Content-Length", string(len(json)))
+	addPayloadHeaders(request, len(json))
 
 	tableStorageProxy.executeRequest(request, client, tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29")
 }
@@ -68,9 +67,8 @@ func (tableStorageProxy *TableStorageProxy) MergeEntity(tableName string, partit
 		request, _ := http.NewRequest("MERGE", tableStorageProxy.baseUrl+tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29",  bytes.NewBuffer(json))
 		request.Header.Set("If-Match", "*")
 		request.Header.Set("Accept", "application/json;odata=nometadata")
-		request.Header.Set("Content-Type", "application/json")
-		request.Header.Set("Content-Length", string(len(json)))
-
+		addPayloadHeaders(request, len(json))
+		
 		tableStorageProxy.executeRequest(request, client, tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29")
 }
 
@@ -78,8 +76,7 @@ func (tableStorageProxy *TableStorageProxy) InsertOrMergeEntity(tableName string
 	client := &http.Client{}
 	request, _ := http.NewRequest("MERGE", tableStorageProxy.baseUrl+tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29",  bytes.NewBuffer(json))
 	request.Header.Set("Accept", "application/json;odata=nometadata")
-	request.Header.Set("Content-Type", "application/json")
-	request.Header.Set("Content-Length", string(len(json)))
+	addPayloadHeaders(request, len(json))
 
 	tableStorageProxy.executeRequest(request, client, tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29")
 }
@@ -129,11 +126,14 @@ func (tableStorageProxy *TableStorageProxy) get(target string) {
 func (tableStorageProxy *TableStorageProxy) postJson(target string, json []byte) {
 	client := &http.Client{}
 	request, _ := http.NewRequest("POST", tableStorageProxy.baseUrl+target, bytes.NewBuffer(json))
-	request.Header.Set("Accept", "application/json;odata=nometadata")
-	request.Header.Set("Content-Type", "application/json")
-	request.Header.Set("Content-Length", string(len(json)))
+	addPayloadHeaders(request, len(json))
 
 	tableStorageProxy.executeRequest(request, client, target)
+}
+
+func addPayloadHeaders(request *http.Request, bodyLength int) {
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("Content-Length", string(bodyLength))
 }
 
 func (tableStorageProxy *TableStorageProxy) executeRequest(request *http.Request, client *http.Client, target string) {
