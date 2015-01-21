@@ -56,7 +56,6 @@ func (tableStorageProxy *TableStorageProxy) UpdateEntity(tableName string, parti
 	client := &http.Client{}
 	request, _ := http.NewRequest("PUT", tableStorageProxy.baseUrl+tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29",  bytes.NewBuffer(json))
 	request.Header.Set("If-Match", "*")
-	request.Header.Set("Accept", "application/json;odata=nometadata")
 	addPayloadHeaders(request, len(json))
 
 	tableStorageProxy.executeRequest(request, client, tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29")
@@ -66,16 +65,14 @@ func (tableStorageProxy *TableStorageProxy) MergeEntity(tableName string, partit
 	client := &http.Client{}
 		request, _ := http.NewRequest("MERGE", tableStorageProxy.baseUrl+tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29",  bytes.NewBuffer(json))
 		request.Header.Set("If-Match", "*")
-		request.Header.Set("Accept", "application/json;odata=nometadata")
 		addPayloadHeaders(request, len(json))
-		
+
 		tableStorageProxy.executeRequest(request, client, tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29")
 }
 
 func (tableStorageProxy *TableStorageProxy) InsertOrMergeEntity(tableName string, partitionKey string, rowKey string, json []byte) {
 	client := &http.Client{}
 	request, _ := http.NewRequest("MERGE", tableStorageProxy.baseUrl+tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29",  bytes.NewBuffer(json))
-	request.Header.Set("Accept", "application/json;odata=nometadata")
 	addPayloadHeaders(request, len(json))
 
 	tableStorageProxy.executeRequest(request, client, tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29")
@@ -84,7 +81,6 @@ func (tableStorageProxy *TableStorageProxy) InsertOrMergeEntity(tableName string
 func (tableStorageProxy *TableStorageProxy) InsertOrReplaceEntity(tableName string, partitionKey string, rowKey string, json []byte) {
 	client := &http.Client{}
 		request, _ := http.NewRequest("PUT", tableStorageProxy.baseUrl+tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29",  bytes.NewBuffer(json))
-		request.Header.Set("Accept", "application/json;odata=nometadata")
 		addPayloadHeaders(request, len(json))
 
 		tableStorageProxy.executeRequest(request, client, tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29")
