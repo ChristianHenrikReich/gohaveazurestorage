@@ -20,14 +20,14 @@ type GoHaveStorage interface {
 
 type TableStorageProxy struct {
 	goHaveStorage GoHaveStorage
-	baseUrl string
+	baseUrl       string
 }
 
 func New(goHaveStorage GoHaveStorage) *TableStorageProxy {
 	var tableStorageProxy TableStorageProxy
 
 	tableStorageProxy.goHaveStorage = goHaveStorage
-	tableStorageProxy.baseUrl = "https://"+goHaveStorage.GetAccount()+".table.core.windows.net/"
+	tableStorageProxy.baseUrl = "https://" + goHaveStorage.GetAccount() + ".table.core.windows.net/"
 
 	return &tableStorageProxy
 }
@@ -37,31 +37,31 @@ func (tableStorageProxy *TableStorageProxy) QueryTables() {
 }
 
 func (tableStorageProxy *TableStorageProxy) QueryEntity(tableName string, partitionKey string, rowKey string, selects string) {
-	tableStorageProxy.executeCommonRequest("GET", tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29", "?$select="+selects, nil, false, true, false)
+	tableStorageProxy.executeCommonRequest("GET", tableName+"%28PartitionKey=%27"+partitionKey+"%27,RowKey=%27"+rowKey+"%27%29", "?$select="+selects, nil, false, true, false)
 }
 
 func (tableStorageProxy *TableStorageProxy) QueryEntities(tableName string, selects string, filter string, top string) {
-	tableStorageProxy.executeCommonRequest("GET", tableName, "?$filter="+filter + "&$select=" + selects+"&$top="+top, nil, false, true, false)
+	tableStorageProxy.executeCommonRequest("GET", tableName, "?$filter="+filter+"&$select="+selects+"&$top="+top, nil, false, true, false)
 }
 
 func (tableStorageProxy *TableStorageProxy) DeleteEntity(tableName string, partitionKey string, rowKey string) {
-	tableStorageProxy.executeEntityRequest("DELETE",tableName, partitionKey, rowKey, nil, true)
+	tableStorageProxy.executeEntityRequest("DELETE", tableName, partitionKey, rowKey, nil, true)
 }
 
 func (tableStorageProxy *TableStorageProxy) UpdateEntity(tableName string, partitionKey string, rowKey string, json []byte) {
-	tableStorageProxy.executeEntityRequest("PUT",tableName, partitionKey, rowKey, json, true)
+	tableStorageProxy.executeEntityRequest("PUT", tableName, partitionKey, rowKey, json, true)
 }
 
 func (tableStorageProxy *TableStorageProxy) MergeEntity(tableName string, partitionKey string, rowKey string, json []byte) {
-	tableStorageProxy.executeEntityRequest("MERGE",tableName, partitionKey, rowKey, json, true)
+	tableStorageProxy.executeEntityRequest("MERGE", tableName, partitionKey, rowKey, json, true)
 }
 
 func (tableStorageProxy *TableStorageProxy) InsertOrMergeEntity(tableName string, partitionKey string, rowKey string, json []byte) {
-	tableStorageProxy.executeEntityRequest("MERGE",tableName, partitionKey, rowKey, json, false)
+	tableStorageProxy.executeEntityRequest("MERGE", tableName, partitionKey, rowKey, json, false)
 }
 
 func (tableStorageProxy *TableStorageProxy) InsertOrReplaceEntity(tableName string, partitionKey string, rowKey string, json []byte) {
-	tableStorageProxy.executeEntityRequest("PUT",tableName, partitionKey, rowKey, json, false)
+	tableStorageProxy.executeEntityRequest("PUT", tableName, partitionKey, rowKey, json, false)
 }
 
 func (tableStorageProxy *TableStorageProxy) DeleteTable(tableName string) {
@@ -81,11 +81,11 @@ func (tableStorageProxy *TableStorageProxy) InsertEntity(tableName string, json 
 	tableStorageProxy.executeCommonRequest("POST", tableName, "", json, false, true, false)
 }
 
-func (tableStorageProxy *TableStorageProxy)  executeEntityRequest(httpVerb string, tableName string, partitionKey string, rowKey string, json []byte, useIfMatch bool) {
-	tableStorageProxy.executeCommonRequest(httpVerb, tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29", "", json, useIfMatch, false, false)
+func (tableStorageProxy *TableStorageProxy) executeEntityRequest(httpVerb string, tableName string, partitionKey string, rowKey string, json []byte, useIfMatch bool) {
+	tableStorageProxy.executeCommonRequest(httpVerb, tableName+"%28PartitionKey=%27"+partitionKey+"%27,RowKey=%27"+rowKey+"%27%29", "", json, useIfMatch, false, false)
 }
 
-func (tableStorageProxy *TableStorageProxy)  executeCommonRequest(httpVerb string, target string, query string, json []byte, useIfMatch bool, useAccept bool, useContentTypeXML bool) {
+func (tableStorageProxy *TableStorageProxy) executeCommonRequest(httpVerb string, target string, query string, json []byte, useIfMatch bool, useAccept bool, useContentTypeXML bool) {
 	xmsdate, Authentication := tableStorageProxy.calculateDateAndAuthentication(target)
 
 	client := &http.Client{}
