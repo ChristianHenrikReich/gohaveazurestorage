@@ -87,11 +87,6 @@ func (tableStorageProxy *TableStorageProxy) InsertEntity(tableName string, json 
 	tableStorageProxy.executeCommonRequest("POST", tableName, "", json, false)
 }
 
-func addPayloadHeaders(request *http.Request, bodyLength int) {
-	request.Header.Set("Content-Type", "application/json")
-	request.Header.Set("Content-Length", string(bodyLength))
-}
-
 func (tableStorageProxy *TableStorageProxy) executeRequest(request *http.Request, client *http.Client, target string) {
 	xmsdate, Authentication := tableStorageProxy.calculateDateAndAuthentication(target)
 
@@ -118,7 +113,8 @@ func (tableStorageProxy *TableStorageProxy)  executeCommonRequest(httpVerb strin
 	request, _ := http.NewRequest(httpVerb, tableStorageProxy.baseUrl+target+query, bytes.NewBuffer(json))
 
 	if json != nil {
-		addPayloadHeaders(request, len(json))
+		request.Header.Set("Content-Type", "application/json")
+		request.Header.Set("Content-Length", string(len(json)))
 	}
 
 	if useIfMatch {
