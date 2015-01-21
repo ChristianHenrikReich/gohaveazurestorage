@@ -45,29 +45,15 @@ func (tableStorageProxy *TableStorageProxy) QueryEntity(tableName string, partit
 }
 
 func (tableStorageProxy *TableStorageProxy) DeleteEntity(tableName string, partitionKey string, rowKey string) {
-	client := &http.Client{}
-	request, _ := http.NewRequest("DELETE", tableStorageProxy.baseUrl+tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29", nil)
-	request.Header.Set("If-Match", "*")
-
-	tableStorageProxy.executeRequest(request, client, tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29")
+	tableStorageProxy.executeEntityRequest("DELETE",tableName, partitionKey, rowKey, nil, true)
 }
 
 func (tableStorageProxy *TableStorageProxy) UpdateEntity(tableName string, partitionKey string, rowKey string, json []byte) {
-	client := &http.Client{}
-	request, _ := http.NewRequest("PUT", tableStorageProxy.baseUrl+tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29",  bytes.NewBuffer(json))
-	request.Header.Set("If-Match", "*")
-	addPayloadHeaders(request, len(json))
-
-	tableStorageProxy.executeRequest(request, client, tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29")
+	tableStorageProxy.executeEntityRequest("PUT",tableName, partitionKey, rowKey, json, true)
 }
 
 func (tableStorageProxy *TableStorageProxy) MergeEntity(tableName string, partitionKey string, rowKey string, json []byte) {
-	client := &http.Client{}
-		request, _ := http.NewRequest("MERGE", tableStorageProxy.baseUrl+tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29",  bytes.NewBuffer(json))
-		request.Header.Set("If-Match", "*")
-		addPayloadHeaders(request, len(json))
-
-		tableStorageProxy.executeRequest(request, client, tableName + "%28PartitionKey=%27" + partitionKey + "%27,RowKey=%27" + rowKey + "%27%29")
+	tableStorageProxy.executeEntityRequest("MERGE",tableName, partitionKey, rowKey, json, true)
 }
 
 func (tableStorageProxy *TableStorageProxy) InsertOrMergeEntity(tableName string, partitionKey string, rowKey string, json []byte) {
