@@ -166,6 +166,12 @@ func TestDeleteTable(t *testing.T) {
 	tableStorageProxy.DeleteTable(Table)
 }
 
+func TestGetTableServiceProperties(t *testing.T) {
+  goHaveStorage := New(Account, Key)
+  tableStorageProxy := goHaveStorage.NewTableStorageProxy()
+  tableStorageProxy.GetTableServiceProperties()
+}
+
 type TestEntity struct {
 	PartitionKey string
 	RowKey       string
