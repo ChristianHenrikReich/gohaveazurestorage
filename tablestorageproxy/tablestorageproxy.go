@@ -36,6 +36,10 @@ func (tableStorageProxy *TableStorageProxy) GetTableServiceProperties() {
 	tableStorageProxy.executeCommonRequest("GET", "?comp=properties", "&restype=service", nil, false, false, false)
 }
 
+func (tableStorageProxy *TableStorageProxy) GetTableServiceStats() {
+	tableStorageProxy.executeCommonRequest("GET", "?comp=properties", "&restype=stats", nil, false, false, false)
+}
+
 func (tableStorageProxy *TableStorageProxy) QueryTables() {
 	tableStorageProxy.executeCommonRequest("GET", "Tables", "", nil, false, true, false)
 }
