@@ -32,6 +32,10 @@ func New(goHaveStorage GoHaveStorage) *TableStorageProxy {
 	return &tableStorageProxy
 }
 
+func (tableStorageProxy *TableStorageProxy) GetTableACL() {
+	tableStorageProxy.executeCommonRequest("HEAD", "?comp=acl", "", nil, false, false, false)
+}
+
 func (tableStorageProxy *TableStorageProxy) GetTableServiceProperties() {
 	tableStorageProxy.executeCommonRequest("GET", "?comp=properties", "&restype=service", nil, false, false, false)
 }

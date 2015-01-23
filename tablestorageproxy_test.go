@@ -178,6 +178,12 @@ func TestGetTableServiceStats(t *testing.T) {
   tableStorageProxy.GetTableServiceProperties()
 }
 
+func TestGetTableACL(t *testing.T) {
+	goHaveStorage := New(Account, Key)
+	tableStorageProxy := goHaveStorage.NewTableStorageProxy()
+	tableStorageProxy.GetTableACL()
+}
+
 type TestEntity struct {
 	PartitionKey string
 	RowKey       string
