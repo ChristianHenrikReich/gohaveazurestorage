@@ -53,6 +53,10 @@ func (tableStorageProxy *TableStorageProxy) GetTableServiceProperties() (*gohave
 	return response, httpStatusCode
 }
 
+func (tableStorageProxy *TableStorageProxy) SetTableServiceProperties(storageServiceProperties *gohavestoragecommon.StorageServiceProperties) int {
+	xmlBytes, _ := xml.MarshalIndent(storageServiceProperties, "", "")
+	_, httpStatusCode := tableStorageProxy.executeCommonRequest("PUT", "?comp=properties", "&restype=service", append([]byte("<?xml version=\"1.0\" encoding=\"utf-8\"?>"), xmlBytes...), false, false, false)
+	return httpStatusCode
 }
 
 func (tableStorageProxy *TableStorageProxy) GetTableServiceStats() {
