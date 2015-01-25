@@ -41,3 +41,21 @@ func TestStorageStatsXMLSerialization(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestStorageAclXMLSerialization(t *testing.T) {
+	expectedXML := "<SignedIdentifiers><SignedIdentifier><Id>b54df8ab0e2d52759110f48c8d0c19e2</Id><AccessPolicy><Start>2014-12-31</Start><Expiry>2114-12-31</Expiry><Permission>raud</Permission></AccessPolicy></SignedIdentifier></SignedIdentifiers>"
+
+	accessPolicy := AccessPolicy{Start: "2014-12-31", Expiry: "2114-12-31", Permission: "raud"}
+	signedIdentifier := SignedIdentifier{Id: "b54df8ab0e2d52759110f48c8d0c19e2", AccessPolicy: accessPolicy}
+	signedIdentifiers := SignedIdentifiers{[]SignedIdentifier{signedIdentifier}}
+
+	output, err := xml.MarshalIndent(signedIdentifiers, "", "")
+	if err != nil {
+		t.Error("XML Masrshalling error: %+v", err)
+	}
+
+	if string(output) != expectedXML {
+		fmt.Printf("%s\n\nvs\n\n%s", expectedXML, string(output))
+		t.Fail()
+	}
+}
