@@ -2,6 +2,8 @@ package gohavestorage
 
 import (
 	"encoding/json"
+	"fmt"
+	"reflect"
 	"testing"
 )
 
@@ -167,9 +169,21 @@ func TestDeleteTable(t *testing.T) {
 }
 
 func TestGetTableServiceProperties(t *testing.T) {
-  goHaveStorage := New(Account, Key)
-  tableStorageProxy := goHaveStorage.NewTableStorageProxy()
-  tableStorageProxy.GetTableServiceProperties()
+	goHaveStorage := New(Account, Key)
+	tableStorageProxy := goHaveStorage.NewTableStorageProxy()
+	properties, _ := tableStorageProxy.GetTableServiceProperties()
+	httpStatusCode := tableStorageProxy.SetTableServiceProperties(properties)
+
+	lastestProperties, _ := tableStorageProxy.GetTableServiceProperties()
+
+	if httpStatusCode != 202 {
+		fmt.Printf("Faild http code other than expected:%d", httpStatusCode)
+		t.Fail()
+	}
+	if reflect.DeepEqual(properties, lastestProperties) == false {
+		fmt.Printf("Dump:\n%+v\n\nvs\n\n%+v", properties, lastestProperties)
+		t.Fail()
+	}
 }
 
 func TestGetTableServiceStats(t *testing.T) {
