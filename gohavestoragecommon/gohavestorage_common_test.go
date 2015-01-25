@@ -26,6 +26,18 @@ func TestStoragePropertiesXMLSerialization(t *testing.T) {
 	}
 }
 
+func TestStorageStatsXMLSerialization(t *testing.T) {
+	expectedXML := "<StorageServiceStats><GeoReplication><Status>bootstrap</Status><LastSyncTime></LastSyncTime></GeoReplication></StorageServiceStats>"
+
+	storageServiceStats := &StorageServiceStats{GeoReplication: GeoReplication{Status: "bootstrap", LastSyncTime: ""}}
+
+	output, err := xml.MarshalIndent(storageServiceStats, "", "")
+	if err != nil {
+		t.Error("XML Masrshalling error: %+v", err)
+	}
+
+	if string(output) != expectedXML {
+		fmt.Printf("%s\n\nvs\n\n%s", expectedXML, string(output))
 		t.Fail()
 	}
 }
