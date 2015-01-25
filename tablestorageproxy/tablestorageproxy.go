@@ -20,6 +20,7 @@ import (
 type GoHaveStorage interface {
 	GetKey() []byte
 	GetAccount() string
+	DumpSessions() bool
 }
 
 type TableStorageProxy struct {
@@ -143,14 +144,16 @@ func (tableStorageProxy *TableStorageProxy) executeCommonRequest(httpVerb string
 	request.Header.Set("x-ms-version", "2013-08-15")
 	request.Header.Set("Authorization", Authentication)
 
-	requestDump, _ := httputil.DumpRequest(request, true)
-
-	fmt.Printf("Request: %s\n", requestDump)
-
 	response, _ := client.Do(request)
 
-	responseDump, _ := httputil.DumpResponse(response, true)
-	fmt.Printf("Response: %s\n", responseDump)
+	if tableStorageProxy.goHaveStorage.DumpSessions() {
+		responseDump, _ := httputil.DumpResponse(response, true)
+		requestDump, _ := httputil.DumpRequest(request, true)
+
+		fmt.Printf("Request: %s\n", requestDump)
+		fmt.Printf("%s\n", string(json))
+		fmt.Printf("Response: %s\n", responseDump)
+	}
 
 	contents, err := ioutil.ReadAll(response.Body)
 	if err != nil {

@@ -169,7 +169,7 @@ func TestDeleteTable(t *testing.T) {
 }
 
 func TestTableServiceProperties(t *testing.T) {
-	goHaveStorage := New(Account, Key)
+	goHaveStorage := NewWithDebug(Account, Key, false)
 	tableStorageProxy := goHaveStorage.NewTableStorageProxy()
 	properties, _ := tableStorageProxy.GetTableServiceProperties()
 	httpStatusCode := tableStorageProxy.SetTableServiceProperties(properties)
