@@ -3,6 +3,7 @@ package gohavestorage
 import (
 	"encoding/json"
 	"fmt"
+	"gohavestorage/gohavestoragecommon"
 	"reflect"
 	"testing"
 )
@@ -200,8 +201,8 @@ func TestGetTableServiceStats(t *testing.T) {
 	}
 }
 
-func TestGetTableACL(t *testing.T) {
-	goHaveStorage := NewWithDebug(Account, Key, true)
+func TestTableACL(t *testing.T) {
+	goHaveStorage := NewWithDebug(Account, Key, false)
 	tableStorageProxy := goHaveStorage.NewTableStorageProxy()
 
 	accessPolicy := gohavestoragecommon.AccessPolicy{Start: "2014-12-31T00:00:00.0000000Z", Expiry: "2114-12-31T00:00:00.0000000Z", Permission: "raud"}
