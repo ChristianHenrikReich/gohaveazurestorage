@@ -7,7 +7,7 @@ import (
 )
 
 func TestStoragePropertiesXMLSerialization(t *testing.T) {
-	expectedXML := "<StorageServiceProperties><Logging><Version>1.0</Version><Delete>false</Delete><Read>false</Read><Write>false</Write><RetentionPolicy><Enabled>false</Enabled><Days>0</Days></RetentionPolicy></Logging><HourMetrics><Version>1.0</Version><Enabled>false</Enabled><IncludeAPIs>false</IncludeAPIs><RetentionPolicy><Enabled>false</Enabled><Days>0</Days></RetentionPolicy></HourMetrics><MinuteMetrics><Version>1.0</Version><Enabled>false</Enabled><IncludeAPIs>false</IncludeAPIs><RetentionPolicy><Enabled>false</Enabled><Days>0</Days></RetentionPolicy></MinuteMetrics><Cors><CorsRule><AllowedOrigins></AllowedOrigins><AllowedMethods></AllowedMethods><MaxAgeInSeconds></MaxAgeInSeconds><ExposedHeaders></ExposedHeaders><AllowedHeaders></AllowedHeaders></CorsRule></Cors></StorageServiceProperties>"
+	expectedXML := "<StorageServiceProperties><Logging><Version>1.0</Version><Read>false</Read><Write>false</Write><Delete>false</Delete><RetentionPolicy><Enabled>false</Enabled></RetentionPolicy></Logging><HourMetrics><Version>1.0</Version><Enabled>false</Enabled><RetentionPolicy><Enabled>false</Enabled></RetentionPolicy></HourMetrics><MinuteMetrics><Version>1.0</Version><Enabled>false</Enabled><RetentionPolicy><Enabled>false</Enabled></RetentionPolicy></MinuteMetrics><Cors></Cors></StorageServiceProperties>"
 
 	retentionPolicy := RetentionPolicy{Enabled: false, Days: 0}
 	loggingProperties := LoggingProperties{Version: "1.0", Delete: false, Read: false, Write: false, RetentionPolicy: retentionPolicy}
@@ -21,7 +21,11 @@ func TestStoragePropertiesXMLSerialization(t *testing.T) {
 	}
 
 	if string(output) != expectedXML {
-		fmt.Printf("%s vs %s", expectedXML, string(output))
+		fmt.Printf("%s\n\nvs\n\n%s", expectedXML, string(output))
+		t.Fail()
+	}
+}
+
 		t.Fail()
 	}
 }
