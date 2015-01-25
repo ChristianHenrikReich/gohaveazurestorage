@@ -62,8 +62,17 @@ func (tableStorageProxy *TableStorageProxy) SetTableServiceProperties(storageSer
 	return httpStatusCode
 }
 
-func (tableStorageProxy *TableStorageProxy) GetTableServiceStats() {
+func (tableStorageProxy *TableStorageProxy) GetTableServiceStats() (*gohavestoragecommon.StorageServiceStats, int) {
 	body, httpStatusCode := tableStorageProxy.executeCommonRequest("GET", "?comp=stats", "&restype=service", nil, false, false, false, true)
+
+	response := &gohavestoragecommon.StorageServiceStats{}
+	err := xml.Unmarshal([]byte(body), &response)
+	if err != nil {
+		fmt.Printf("%s", err)
+		os.Exit(1)
+	}
+
+	return response, httpStatusCode
 }
 
 func (tableStorageProxy *TableStorageProxy) QueryTables() {

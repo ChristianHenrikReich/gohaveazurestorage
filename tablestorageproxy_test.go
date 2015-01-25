@@ -187,9 +187,17 @@ func TestTableServiceProperties(t *testing.T) {
 }
 
 func TestGetTableServiceStats(t *testing.T) {
-  goHaveStorage := New(Account, Key)
-  tableStorageProxy := goHaveStorage.NewTableStorageProxy()
-  tableStorageProxy.GetTableServiceProperties()
+	goHaveStorage := NewWithDebug(Account, Key, false)
+	tableStorageProxy := goHaveStorage.NewTableStorageProxy()
+	stats, httpStatusCode := tableStorageProxy.GetTableServiceStats()
+
+	if httpStatusCode != 200 {
+		fmt.Printf("Faild http code other than expected:%d", httpStatusCode)
+		t.Fail()
+	}
+	if stats.GeoReplication.Status == "" || stats.GeoReplication.LastSyncTime == "" {
+		t.Fail()
+	}
 }
 
 func TestGetTableACL(t *testing.T) {
