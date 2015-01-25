@@ -6,9 +6,13 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
+	"gohavestorage/gohavestoragecommon"
+	"io/ioutil"
 	"net/http"
 	"net/http/httputil"
+	"os"
 	"strings"
 	"time"
 )
@@ -36,8 +40,19 @@ func (tableStorageProxy *TableStorageProxy) GetTableACL() {
 	tableStorageProxy.executeCommonRequest("HEAD", "?comp=acl", "", nil, false, false, false)
 }
 
-func (tableStorageProxy *TableStorageProxy) GetTableServiceProperties() {
-	tableStorageProxy.executeCommonRequest("GET", "?comp=properties", "&restype=service", nil, false, false, false)
+func (tableStorageProxy *TableStorageProxy) GetTableServiceProperties() (*gohavestoragecommon.StorageServiceProperties, int) {
+	body, httpStatusCode := tableStorageProxy.executeCommonRequest("GET", "?comp=properties", "&restype=service", nil, false, false, true)
+
+	response := &gohavestoragecommon.StorageServiceProperties{}
+	err := xml.Unmarshal([]byte(body), &response)
+	if err != nil {
+		fmt.Printf("%s", err)
+		os.Exit(1)
+	}
+
+	return response, httpStatusCode
+}
+
 }
 
 func (tableStorageProxy *TableStorageProxy) GetTableServiceStats() {
@@ -97,7 +112,7 @@ func (tableStorageProxy *TableStorageProxy) executeEntityRequest(httpVerb string
 	tableStorageProxy.executeCommonRequest(httpVerb, tableName+"%28PartitionKey=%27"+partitionKey+"%27,RowKey=%27"+rowKey+"%27%29", "", json, useIfMatch, false, false)
 }
 
-func (tableStorageProxy *TableStorageProxy) executeCommonRequest(httpVerb string, target string, query string, json []byte, useIfMatch bool, useAccept bool, useContentTypeXML bool) {
+func (tableStorageProxy *TableStorageProxy) executeCommonRequest(httpVerb string, target string, query string, json []byte, useIfMatch bool, useAccept bool, useContentTypeXML bool) ([]byte, int) {
 	xmsdate, Authentication := tableStorageProxy.calculateDateAndAuthentication(target)
 
 	client := &http.Client{}
@@ -132,6 +147,14 @@ func (tableStorageProxy *TableStorageProxy) executeCommonRequest(httpVerb string
 
 	responseDump, _ := httputil.DumpResponse(response, true)
 	fmt.Printf("Response: %s\n", responseDump)
+
+	contents, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		fmt.Printf("%s", err)
+		os.Exit(1)
+	}
+
+	return contents, response.StatusCode
 }
 
 func (tableStorageProxy *TableStorageProxy) calculateDateAndAuthentication(target string) (string, string) {
