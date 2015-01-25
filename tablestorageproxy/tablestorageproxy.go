@@ -39,8 +39,23 @@ func New(goHaveStorage GoHaveStorage) *TableStorageProxy {
 	return &tableStorageProxy
 }
 
-func (tableStorageProxy *TableStorageProxy) GetTableACL() {
-	tableStorageProxy.executeCommonRequest("HEAD", "?comp=acl", "", nil, false, false, false, false)
+func (tableStorageProxy *TableStorageProxy) GetTableACL(tableName string) (*gohavestoragecommon.SignedIdentifiers, int) {
+	body, httpStatusCode := tableStorageProxy.executeCommonRequest("GET", tableName+"?comp=acl", "", nil, false, false, false, false)
+
+	response := &gohavestoragecommon.SignedIdentifiers{}
+	err := xml.Unmarshal([]byte(body), &response)
+	if err != nil {
+		fmt.Printf("%s", err)
+		os.Exit(1)
+	}
+
+	return response, httpStatusCode
+}
+
+func (tableStorageProxy *TableStorageProxy) SetTableACL(tableName string, signedIdentifiers *gohavestoragecommon.SignedIdentifiers) int {
+	xmlBytes, _ := xml.MarshalIndent(signedIdentifiers, "", "")
+	_, httpStatusCode := tableStorageProxy.executeCommonRequest("PUT", tableName+"?comp=acl", "", xmlBytes, false, false, true, false)
+	return httpStatusCode
 }
 
 func (tableStorageProxy *TableStorageProxy) GetTableServiceProperties() (*gohavestoragecommon.StorageServiceProperties, int) {
@@ -147,7 +162,7 @@ func (tableStorageProxy *TableStorageProxy) executeCommonRequest(httpVerb string
 	}
 
 	if useContentTypeXML {
-		request.Header.Set("Content-Type", "application/atom+xml")
+		request.Header.Set("Content-Type", "application/xml")
 	}
 
 	if useIfMatch {
