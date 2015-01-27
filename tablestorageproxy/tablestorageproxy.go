@@ -56,10 +56,6 @@ func (tableStorageProxy *TableStorageProxy) GetTableServiceStats() (*gohavestora
 	return response, httpStatusCode
 }
 
-func (tableStorageProxy *TableStorageProxy) QueryTables() {
-	tableStorageProxy.http.Request("GET", "Tables", "", nil, false, true, false, false)
-}
-
 func (tableStorageProxy *TableStorageProxy) QueryEntity(tableName string, partitionKey string, rowKey string, selects string) {
 	tableStorageProxy.http.Request("GET", tableName+"%28PartitionKey=%27"+partitionKey+"%27,RowKey=%27"+rowKey+"%27%29", "?$select="+selects, nil, false, true, false, false)
 }
@@ -88,17 +84,24 @@ func (tableStorageProxy *TableStorageProxy) InsertOrReplaceEntity(tableName stri
 	tableStorageProxy.executeEntityRequest("PUT", tableName, partitionKey, rowKey, json, false)
 }
 
-func (tableStorageProxy *TableStorageProxy) DeleteTable(tableName string) {
-	tableStorageProxy.http.Request("DELETE", tableName, "", nil, false, false, true, false)
-}
-
 type CreateTableArgs struct {
 	TableName string
 }
 
-func (tableStorageProxy *TableStorageProxy) CreateTable(tableName string) {
+func (tableStorageProxy *TableStorageProxy) CreateTable(tableName string) int {
 	json, _ := json.Marshal(CreateTableArgs{TableName: tableName})
-	tableStorageProxy.http.Request("POST", "Tables", "", json, false, true, false, false)
+	_, httpStatusCode := tableStorageProxy.http.Request("POST", "Tables", "", json, false, true, false, false)
+	return httpStatusCode
+}
+
+func (tableStorageProxy *TableStorageProxy) DeleteTable(tableName string) int {
+	_, httpStatusCode := tableStorageProxy.http.Request("DELETE", "Tables%28%27"+tableName+"%27%29", "", nil, false, false, true, false)
+	return httpStatusCode
+}
+
+func (tableStorageProxy *TableStorageProxy) QueryTables() ([]byte, int) {
+	body, httpStatusCode := tableStorageProxy.http.Request("GET", "Tables", "", nil, false, true, false, false)
+	return body, httpStatusCode
 }
 
 func (tableStorageProxy *TableStorageProxy) InsertEntity(tableName string, json []byte) {
