@@ -17,13 +17,8 @@ func New(account string, key string) *GoHaveStorage {
 }
 
 func NewWithDebug(account string, key string, dumpSessions bool) *GoHaveStorage {
-	var goHaveStorage GoHaveStorage
-
-	goHaveStorage.account = account
-	goHaveStorage.key, _ = base64.StdEncoding.DecodeString(key)
-	goHaveStorage.dumpSessions = dumpSessions
-
-	return &goHaveStorage
+	decodedKey, _ := base64.StdEncoding.DecodeString(key)
+	return &GoHaveStorage{account: account, key: decodedKey, dumpSessions: dumpSessions}
 }
 
 func (goHaveStorage *GoHaveStorage) NewTableStorageProxy() *tablestorageproxy.TableStorageProxy {
