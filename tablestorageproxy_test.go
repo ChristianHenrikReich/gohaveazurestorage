@@ -14,11 +14,7 @@ var Table = "TestTable"
 
 func TestTableMethods(t *testing.T) {
 	goHaveStorage := NewWithDebug(Account, Key, false)
-func TestCreateTable(t *testing.T) {
-	goHaveStorage := New(Account, Key)
 	tableStorageProxy := goHaveStorage.NewTableStorageProxy()
-	tableStorageProxy.CreateTable(Table)
-}
 
 	httpStatusCode := tableStorageProxy.CreateTable("TableForTestingTableMethods")
 	if httpStatusCode != 201 {
@@ -40,10 +36,6 @@ func TestCreateTable(t *testing.T) {
 		fmt.Printf("Faild http code other than expected:%d", httpStatusCode)
 		t.Fail()
 	}
-func TestQueryTables(t *testing.T) {
-	goHaveStorage := New(Account, Key)
-	tableStorageProxy := goHaveStorage.NewTableStorageProxy()
-	tableStorageProxy.QueryTables()
 }
 
 func TestInsertEntity(t *testing.T) {
@@ -183,12 +175,6 @@ func TestInsertOrReplaceEntity(t *testing.T) {
 
 	json, _ := json.Marshal(entity)
 	tableStorageProxy.InsertOrReplaceEntity(Table, "ABC", "456", json)
-}
-
-func TestDeleteTable(t *testing.T) {
-	goHaveStorage := New(Account, Key)
-	tableStorageProxy := goHaveStorage.NewTableStorageProxy()
-	tableStorageProxy.DeleteTable(Table)
 }
 
 func TestTableServiceProperties(t *testing.T) {
