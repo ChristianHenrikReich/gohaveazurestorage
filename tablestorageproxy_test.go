@@ -2,6 +2,9 @@ package gohavestorage
 
 import (
 	"encoding/json"
+	"fmt"
+	"gohavestorage/gohavestoragecommon"
+	"reflect"
 	"testing"
 )
 
@@ -164,6 +167,59 @@ func TestDeleteTable(t *testing.T) {
 	goHaveStorage := New(Account, Key)
 	tableStorageProxy := goHaveStorage.NewTableStorageProxy()
 	tableStorageProxy.DeleteTable(Table)
+}
+
+func TestTableServiceProperties(t *testing.T) {
+	goHaveStorage := NewWithDebug(Account, Key, false)
+	tableStorageProxy := goHaveStorage.NewTableStorageProxy()
+	properties, _ := tableStorageProxy.GetTableServiceProperties()
+	httpStatusCode := tableStorageProxy.SetTableServiceProperties(properties)
+
+	lastestProperties, _ := tableStorageProxy.GetTableServiceProperties()
+
+	if httpStatusCode != 202 {
+		fmt.Printf("Faild http code other than expected:%d", httpStatusCode)
+		t.Fail()
+	}
+	if reflect.DeepEqual(properties, lastestProperties) == false {
+		fmt.Printf("Dump:\n%+v\n\nvs\n\n%+v", properties, lastestProperties)
+		t.Fail()
+	}
+}
+
+func TestGetTableServiceStats(t *testing.T) {
+	goHaveStorage := NewWithDebug(Account, Key, false)
+	tableStorageProxy := goHaveStorage.NewTableStorageProxy()
+	stats, httpStatusCode := tableStorageProxy.GetTableServiceStats()
+
+	if httpStatusCode != 200 {
+		fmt.Printf("Faild http code other than expected:%d", httpStatusCode)
+		t.Fail()
+	}
+	if stats.GeoReplication.Status == "" || stats.GeoReplication.LastSyncTime == "" {
+		t.Fail()
+	}
+}
+
+func TestTableACL(t *testing.T) {
+	goHaveStorage := NewWithDebug(Account, Key, false)
+	tableStorageProxy := goHaveStorage.NewTableStorageProxy()
+
+	accessPolicy := gohavestoragecommon.AccessPolicy{Start: "2014-12-31T00:00:00.0000000Z", Expiry: "2114-12-31T00:00:00.0000000Z", Permission: "raud"}
+	signedIdentifier := gohavestoragecommon.SignedIdentifier{Id: "b54df8ab0e2d52759110f48c8d0c19e2", AccessPolicy: accessPolicy}
+	signedIdentifiers := &gohavestoragecommon.SignedIdentifiers{[]gohavestoragecommon.SignedIdentifier{signedIdentifier}}
+	tableStorageProxy.SetTableACL(Table, signedIdentifiers)
+
+	acl, httpStatusCode := tableStorageProxy.GetTableACL(Table)
+
+	if httpStatusCode != 200 {
+		fmt.Printf("Faild http code other than expected:%d", httpStatusCode)
+		t.Fail()
+	}
+	if reflect.DeepEqual(signedIdentifiers, acl) == false {
+		fmt.Printf("Dump:\n%+v\n\nvs\n\n%+v", signedIdentifiers, acl)
+		t.Fail()
+	}
 }
 
 type TestEntity struct {
