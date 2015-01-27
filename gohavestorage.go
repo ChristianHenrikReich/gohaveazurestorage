@@ -30,15 +30,3 @@ func (goHaveStorage *GoHaveStorage) NewTableStorageProxy() *tablestorageproxy.Ta
 	http := gohavestoragecommon.NewHTTP("table", goHaveStorage.account, goHaveStorage.key, goHaveStorage.dumpSessions)
 	return tablestorageproxy.New(http)
 }
-
-func (goHaveStorage *GoHaveStorage) GetAccount() string {
-	return goHaveStorage.account
-}
-
-func (goHaveStorage *GoHaveStorage) GetKey() []byte {
-	return goHaveStorage.key
-}
-
-func (goHaveStorage *GoHaveStorage) DumpSessions() bool {
-	return goHaveStorage.dumpSessions
-}

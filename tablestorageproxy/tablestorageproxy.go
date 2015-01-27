@@ -1,27 +1,12 @@
 package tablestorageproxy
 
 import (
-	"bytes"
-	"crypto/hmac"
-	"crypto/sha256"
-	"encoding/base64"
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
 	"gohavestorage/gohavestoragecommon"
-	"io/ioutil"
-	"net/http"
-	"net/http/httputil"
 	"os"
-	"strings"
-	"time"
 )
-
-type GoHaveStorage interface {
-	GetKey() []byte
-	GetAccount() string
-	DumpSessions() bool
-}
 
 type TableStorageProxy struct {
 	http             *gohavestoragecommon.HTTP
@@ -122,77 +107,6 @@ func (tableStorageProxy *TableStorageProxy) InsertEntity(tableName string, json 
 
 func (tableStorageProxy *TableStorageProxy) executeEntityRequest(httpVerb string, tableName string, partitionKey string, rowKey string, json []byte, useIfMatch bool) {
 	tableStorageProxy.http.Request(httpVerb, tableName+"%28PartitionKey=%27"+partitionKey+"%27,RowKey=%27"+rowKey+"%27%29", "", json, useIfMatch, false, false, false)
-}
-
-func (tableStorageProxy *TableStorageProxy) executeCommonRequest(httpVerb string, target string, query string, json []byte, useIfMatch bool, useAccept bool, useContentTypeXML bool, useSecondary bool) ([]byte, int) {
-	xmsdate, Authentication := tableStorageProxy.calculateDateAndAuthentication(target)
-
-	baseUrl := ""
-	if useSecondary {
-		baseUrl = tableStorageProxy.secondaryBaseUrl
-	} else {
-		baseUrl = tableStorageProxy.baseUrl
-	}
-
-	client := &http.Client{}
-	request, _ := http.NewRequest(httpVerb, baseUrl+target+query, bytes.NewBuffer(json))
-
-	if json != nil {
-		request.Header.Set("Content-Type", "application/json")
-		request.Header.Set("Content-Length", string(len(json)))
-	}
-
-	if useContentTypeXML {
-		request.Header.Set("Content-Type", "application/xml")
-	}
-
-	if useIfMatch {
-		request.Header.Set("If-Match", "*")
-	}
-
-	if useAccept {
-		request.Header.Set("Accept", "application/json;odata=nometadata")
-	}
-
-	request.Header.Set("x-ms-date", xmsdate)
-	request.Header.Set("x-ms-version", "2013-08-15")
-	request.Header.Set("Authorization", Authentication)
-
-	response, err := client.Do(request)
-	if err != nil {
-		fmt.Printf("%s", err)
-		os.Exit(1)
-	}
-
-	if tableStorageProxy.goHaveStorage.DumpSessions() {
-		responseDump, _ := httputil.DumpResponse(response, true)
-		requestDump, _ := httputil.DumpRequest(request, true)
-
-		fmt.Printf("Request: %s\n", requestDump)
-		fmt.Printf("%s\n", string(json))
-		fmt.Printf("Response: %s\n", responseDump)
-	}
-
-	contents, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		fmt.Printf("%s", err)
-		os.Exit(1)
-	}
-
-	return contents, response.StatusCode
-}
-
-func (tableStorageProxy *TableStorageProxy) calculateDateAndAuthentication(target string) (string, string) {
-	xmsdate := strings.Replace(time.Now().UTC().Add(-time.Minute).Format(time.RFC1123), "UTC", "GMT", -1)
-	SignatureString := xmsdate + "\n/" + tableStorageProxy.goHaveStorage.GetAccount() + "/" + target
-	Authentication := "SharedKeyLite " + tableStorageProxy.goHaveStorage.GetAccount() + ":" + computeHmac256(SignatureString, tableStorageProxy.goHaveStorage.GetKey())
-	return xmsdate, Authentication
-}
-
-func computeHmac256(message string, key []byte) string {
-	h := hmac.New(sha256.New, key)
-	h.Write([]byte(message))
-	return base64.StdEncoding.EncodeToString(h.Sum(nil))
 }
 
 func desrializeXML(bytes []byte, object interface{}) {
