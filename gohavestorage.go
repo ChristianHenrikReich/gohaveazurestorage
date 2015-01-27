@@ -2,6 +2,7 @@ package gohavestorage
 
 import (
 	"encoding/base64"
+	"gohavestorage/gohavestoragecommon"
 	"gohavestorage/tablestorageproxy"
 )
 
@@ -26,8 +27,8 @@ func NewWithDebug(account string, key string, dumpSessions bool) *GoHaveStorage 
 }
 
 func (goHaveStorage *GoHaveStorage) NewTableStorageProxy() *tablestorageproxy.TableStorageProxy {
-	tableStorageProxy := tablestorageproxy.New(tablestorageproxy.GoHaveStorage(goHaveStorage))
-	return tableStorageProxy
+	http := gohavestoragecommon.NewHTTP("table", goHaveStorage.account, goHaveStorage.key, goHaveStorage.dumpSessions)
+	return tablestorageproxy.New(http)
 }
 
 func (goHaveStorage *GoHaveStorage) GetAccount() string {
