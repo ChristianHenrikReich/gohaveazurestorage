@@ -43,11 +43,7 @@ func (tableStorageProxy *TableStorageProxy) GetTableACL(tableName string) (*goha
 	body, httpStatusCode := tableStorageProxy.executeCommonRequest("GET", tableName+"?comp=acl", "", nil, false, false, false, false)
 
 	response := &gohavestoragecommon.SignedIdentifiers{}
-	err := xml.Unmarshal([]byte(body), &response)
-	if err != nil {
-		fmt.Printf("%s", err)
-		os.Exit(1)
-	}
+	desrializeXML([]byte(body), response)
 
 	return response, httpStatusCode
 }
@@ -62,12 +58,7 @@ func (tableStorageProxy *TableStorageProxy) GetTableServiceProperties() (*gohave
 	body, httpStatusCode := tableStorageProxy.executeCommonRequest("GET", "?comp=properties", "&restype=service", nil, false, false, true, false)
 
 	response := &gohavestoragecommon.StorageServiceProperties{}
-	err := xml.Unmarshal([]byte(body), &response)
-	if err != nil {
-		fmt.Printf("%s", err)
-		os.Exit(1)
-	}
-
+	desrializeXML([]byte(body), response)
 	return response, httpStatusCode
 }
 
@@ -81,11 +72,7 @@ func (tableStorageProxy *TableStorageProxy) GetTableServiceStats() (*gohavestora
 	body, httpStatusCode := tableStorageProxy.executeCommonRequest("GET", "?comp=stats", "&restype=service", nil, false, false, false, true)
 
 	response := &gohavestoragecommon.StorageServiceStats{}
-	err := xml.Unmarshal([]byte(body), &response)
-	if err != nil {
-		fmt.Printf("%s", err)
-		os.Exit(1)
-	}
+	desrializeXML([]byte(body), response)
 
 	return response, httpStatusCode
 }
@@ -212,4 +199,12 @@ func computeHmac256(message string, key []byte) string {
 	h := hmac.New(sha256.New, key)
 	h.Write([]byte(message))
 	return base64.StdEncoding.EncodeToString(h.Sum(nil))
+}
+
+func desrializeXML(bytes []byte, object interface{}) {
+	err := xml.Unmarshal([]byte(bytes), &object)
+	if err != nil {
+		fmt.Printf("%s", err)
+		os.Exit(1)
+	}
 }
