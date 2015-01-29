@@ -20,25 +20,16 @@ func TestTableMethods(t *testing.T) {
 	tableStorageProxy := goHaveStorage.NewTableStorageProxy()
 
 	httpStatusCode := tableStorageProxy.CreateTable(table)
-	if httpStatusCode != 201 {
-		fmt.Printf("Faild http code other than expected:%d", httpStatusCode)
-		t.Fail()
-	}
+	assertHTTPStatusCode(t, httpStatusCode, 201)
 
 	body, httpStatusCode := tableStorageProxy.QueryTables()
-	if httpStatusCode != 200 {
-		fmt.Printf("Faild http code other than expected:%d", httpStatusCode)
-		t.Fail()
-	}
+	assertHTTPStatusCode(t, httpStatusCode, 200)
 	if strings.Contains(string(body), "\"TableName\":\"TableForTestingTableMethods\"") != true {
 		t.Fail()
 	}
 
 	httpStatusCode = tableStorageProxy.DeleteTable(table)
-	if httpStatusCode != 204 {
-		fmt.Printf("Faild http code other than expected:%d", httpStatusCode)
-		t.Fail()
-	}
+	assertHTTPStatusCode(t, httpStatusCode, 204)
 }
 
 func TestEntityMethods(t *testing.T) {
