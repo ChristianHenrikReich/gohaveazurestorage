@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"gohavestorage/gohavestoragecommon"
 	"os"
+	"strings"
 )
 
 type TableStorageProxy struct {
@@ -56,32 +57,43 @@ func (tableStorageProxy *TableStorageProxy) GetTableServiceStats() (*gohavestora
 	return response, httpStatusCode
 }
 
-func (tableStorageProxy *TableStorageProxy) QueryEntity(tableName string, partitionKey string, rowKey string, selects string) {
-	tableStorageProxy.http.Request("GET", tableName+"%28PartitionKey=%27"+partitionKey+"%27,RowKey=%27"+rowKey+"%27%29", "?$select="+selects, nil, false, true, false, false)
+func (tableStorageProxy *TableStorageProxy) QueryEntity(tableName string, partitionKey string, rowKey string, selects string) ([]byte, int) {
+	return tableStorageProxy.http.Request("GET", tableName+"%28PartitionKey=%27"+partitionKey+"%27,RowKey=%27"+rowKey+"%27%29", "?$select="+selects, nil, false, true, false, false)
 }
 
-func (tableStorageProxy *TableStorageProxy) QueryEntities(tableName string, selects string, filter string, top string) {
-	tableStorageProxy.http.Request("GET", tableName, "?$filter="+filter+"&$select="+selects+"&$top="+top, nil, false, true, false, false)
+func (tableStorageProxy *TableStorageProxy) QueryEntities(tableName string, selects string, filter string, top string) ([]byte, int) {
+	filter = strings.Replace(filter, " ", "%20", -1)
+	return tableStorageProxy.http.Request("GET", tableName, "?$filter="+filter+"&$select="+selects+"&$top="+top, nil, false, true, false, false)
 }
 
-func (tableStorageProxy *TableStorageProxy) DeleteEntity(tableName string, partitionKey string, rowKey string) {
-	tableStorageProxy.executeEntityRequest("DELETE", tableName, partitionKey, rowKey, nil, true)
+func (tableStorageProxy *TableStorageProxy) InsertEntity(tableName string, json []byte) int {
+	_, httpStatusCode := tableStorageProxy.http.Request("POST", tableName, "", json, false, true, false, false)
+	return httpStatusCode
 }
 
-func (tableStorageProxy *TableStorageProxy) UpdateEntity(tableName string, partitionKey string, rowKey string, json []byte) {
-	tableStorageProxy.executeEntityRequest("PUT", tableName, partitionKey, rowKey, json, true)
+func (tableStorageProxy *TableStorageProxy) DeleteEntity(tableName string, partitionKey string, rowKey string) int {
+	_, httpStatusCode := tableStorageProxy.executeEntityRequest("DELETE", tableName, partitionKey, rowKey, nil, true)
+	return httpStatusCode
 }
 
-func (tableStorageProxy *TableStorageProxy) MergeEntity(tableName string, partitionKey string, rowKey string, json []byte) {
-	tableStorageProxy.executeEntityRequest("MERGE", tableName, partitionKey, rowKey, json, true)
+func (tableStorageProxy *TableStorageProxy) UpdateEntity(tableName string, partitionKey string, rowKey string, json []byte) int {
+	_, httpStatusCode := tableStorageProxy.executeEntityRequest("PUT", tableName, partitionKey, rowKey, json, true)
+	return httpStatusCode
 }
 
-func (tableStorageProxy *TableStorageProxy) InsertOrMergeEntity(tableName string, partitionKey string, rowKey string, json []byte) {
-	tableStorageProxy.executeEntityRequest("MERGE", tableName, partitionKey, rowKey, json, false)
+func (tableStorageProxy *TableStorageProxy) MergeEntity(tableName string, partitionKey string, rowKey string, json []byte) int {
+	_, httpStatusCode := tableStorageProxy.executeEntityRequest("MERGE", tableName, partitionKey, rowKey, json, true)
+	return httpStatusCode
 }
 
-func (tableStorageProxy *TableStorageProxy) InsertOrReplaceEntity(tableName string, partitionKey string, rowKey string, json []byte) {
-	tableStorageProxy.executeEntityRequest("PUT", tableName, partitionKey, rowKey, json, false)
+func (tableStorageProxy *TableStorageProxy) InsertOrMergeEntity(tableName string, partitionKey string, rowKey string, json []byte) int {
+	_, httpStatusCode := tableStorageProxy.executeEntityRequest("MERGE", tableName, partitionKey, rowKey, json, false)
+	return httpStatusCode
+}
+
+func (tableStorageProxy *TableStorageProxy) InsertOrReplaceEntity(tableName string, partitionKey string, rowKey string, json []byte) int {
+	_, httpStatusCode := tableStorageProxy.executeEntityRequest("PUT", tableName, partitionKey, rowKey, json, false)
+	return httpStatusCode
 }
 
 type CreateTableArgs struct {
@@ -104,12 +116,8 @@ func (tableStorageProxy *TableStorageProxy) QueryTables() ([]byte, int) {
 	return body, httpStatusCode
 }
 
-func (tableStorageProxy *TableStorageProxy) InsertEntity(tableName string, json []byte) {
-	tableStorageProxy.http.Request("POST", tableName, "", json, false, true, false, false)
-}
-
-func (tableStorageProxy *TableStorageProxy) executeEntityRequest(httpVerb string, tableName string, partitionKey string, rowKey string, json []byte, useIfMatch bool) {
-	tableStorageProxy.http.Request(httpVerb, tableName+"%28PartitionKey=%27"+partitionKey+"%27,RowKey=%27"+rowKey+"%27%29", "", json, useIfMatch, false, false, false)
+func (tableStorageProxy *TableStorageProxy) executeEntityRequest(httpVerb string, tableName string, partitionKey string, rowKey string, json []byte, useIfMatch bool) ([]byte, int) {
+	return tableStorageProxy.http.Request(httpVerb, tableName+"%28PartitionKey=%27"+partitionKey+"%27,RowKey=%27"+rowKey+"%27%29", "", json, useIfMatch, false, false, false)
 }
 
 func desrializeXML(bytes []byte, object interface{}) {

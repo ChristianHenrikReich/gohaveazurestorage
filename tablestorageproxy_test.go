@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"gohavestorage/gohavestoragecommon"
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -38,6 +39,95 @@ func TestTableMethods(t *testing.T) {
 	}
 }
 
+func TestEntityMethods(t *testing.T) {
+	table := "TableForTestingEntityMethods"
+
+	goHaveStorage := NewWithDebug(Account, Key, false)
+	tableStorageProxy := goHaveStorage.NewTableStorageProxy()
+
+	httpStatusCode := tableStorageProxy.CreateTable(table)
+	assertHTTPStatusCode(t, httpStatusCode, 201)
+
+	jsonBytes, _ := json.Marshal(&TestEntity{"ABC", "123", "Value1", "Value2", "Value3"})
+	httpStatusCode = tableStorageProxy.InsertEntity(table, jsonBytes)
+	assertHTTPStatusCode(t, httpStatusCode, 201)
+
+	jsonBytes, _ = json.Marshal(&TestEntity{"ABC", "456", "Value1", "Value2", "Value3"})
+	httpStatusCode = tableStorageProxy.InsertEntity(table, jsonBytes)
+	assertHTTPStatusCode(t, httpStatusCode, 201)
+
+	jsonBytes, _ = json.Marshal(&TestEntity{"ABC", "789", "Value1", "Value2", "Value3"})
+	httpStatusCode = tableStorageProxy.InsertEntity(table, jsonBytes)
+	assertHTTPStatusCode(t, httpStatusCode, 201)
+
+	body, httpStatusCode := tableStorageProxy.QueryEntities(table, "PartitionKey,RowKey,Property1,Property2,Property3", "RowKey gt '123'", "1")
+	assertHTTPStatusCode(t, httpStatusCode, 200)
+	assertBody(t, body, "{\"value\":[{\"PartitionKey\":\"ABC\",\"RowKey\":\"456\",\"Property1\":\"Value1\",\"Property2\":\"Value2\",\"Property3\":\"Value3\"}]}")
+
+	httpStatusCode = tableStorageProxy.DeleteEntity(table, "ABC", "456")
+	assertHTTPStatusCode(t, httpStatusCode, 204)
+
+	body, httpStatusCode = tableStorageProxy.QueryEntities(table, "PartitionKey,RowKey,Property1,Property2,Property3", "", "")
+	assertHTTPStatusCode(t, httpStatusCode, 200)
+	assertBody(t, body, "{\"value\":[{\"PartitionKey\":\"ABC\",\"RowKey\":\"123\",\"Property1\":\"Value1\",\"Property2\":\"Value2\",\"Property3\":\"Value3\"},{\"PartitionKey\":\"ABC\",\"RowKey\":\"789\",\"Property1\":\"Value1\",\"Property2\":\"Value2\",\"Property3\":\"Value3\"}]}")
+
+	jsonBytes, _ = json.Marshal(&TestEntity{"ABC", "456", "Value1", "Value2", "Value333"})
+	httpStatusCode = tableStorageProxy.InsertOrReplaceEntity(table, "ABC", "456", jsonBytes)
+	assertHTTPStatusCode(t, httpStatusCode, 204)
+
+	body, httpStatusCode = tableStorageProxy.QueryEntity(table, "ABC", "456", "PartitionKey,RowKey,Property1,Property2,Property3")
+	assertHTTPStatusCode(t, httpStatusCode, 200)
+	assertBody(t, body, "{\"PartitionKey\":\"ABC\",\"RowKey\":\"456\",\"Property1\":\"Value1\",\"Property2\":\"Value2\",\"Property3\":\"Value333\"}")
+
+	jsonBytes, _ = json.Marshal(&TestEntity{"ABC", "456", "Value1", "Value2", "Value3"})
+	httpStatusCode = tableStorageProxy.InsertOrReplaceEntity(table, "ABC", "456", jsonBytes)
+	assertHTTPStatusCode(t, httpStatusCode, 204)
+
+	body, httpStatusCode = tableStorageProxy.QueryEntity(table, "ABC", "456", "PartitionKey,RowKey,Property1,Property2,Property3")
+	assertHTTPStatusCode(t, httpStatusCode, 200)
+	assertBody(t, body, "{\"PartitionKey\":\"ABC\",\"RowKey\":\"456\",\"Property1\":\"Value1\",\"Property2\":\"Value2\",\"Property3\":\"Value3\"}")
+
+	jsonBytes, _ = json.Marshal(&TestEntity{"ABC", "456", "Value1", "Value2", "Value333"})
+	httpStatusCode = tableStorageProxy.UpdateEntity(table, "ABC", "456", jsonBytes)
+	assertHTTPStatusCode(t, httpStatusCode, 204)
+
+	body, httpStatusCode = tableStorageProxy.QueryEntity(table, "ABC", "456", "PartitionKey,RowKey,Property1,Property2,Property3")
+	assertHTTPStatusCode(t, httpStatusCode, 200)
+	assertBody(t, body, "{\"PartitionKey\":\"ABC\",\"RowKey\":\"456\",\"Property1\":\"Value1\",\"Property2\":\"Value2\",\"Property3\":\"Value333\"}")
+
+	jsonBytes, _ = json.Marshal(&SmallTestEntity{PartitionKey: "ABC", RowKey: "246", Property1: "Value1"})
+	httpStatusCode = tableStorageProxy.InsertOrMergeEntity(table, "ABC", "246", jsonBytes)
+	assertHTTPStatusCode(t, httpStatusCode, 204)
+
+	body, httpStatusCode = tableStorageProxy.QueryEntity(table, "ABC", "246", "PartitionKey,RowKey,Property1,Property2,Property3")
+	assertHTTPStatusCode(t, httpStatusCode, 200)
+	assertBody(t, body, "{\"PartitionKey\":\"ABC\",\"RowKey\":\"246\",\"Property1\":\"Value1\",\"Property2\":null,\"Property3\":null}")
+
+	jsonBytes, _ = json.Marshal(&TestEntity{"ABC", "246", "Value1", "Value2", "Value3"})
+	httpStatusCode = tableStorageProxy.MergeEntity(table, "ABC", "246", jsonBytes)
+	assertHTTPStatusCode(t, httpStatusCode, 204)
+
+	body, httpStatusCode = tableStorageProxy.QueryEntity(table, "ABC", "246", "PartitionKey,RowKey,Property1,Property2,Property3")
+	assertHTTPStatusCode(t, httpStatusCode, 200)
+	assertBody(t, body, "{\"PartitionKey\":\"ABC\",\"RowKey\":\"246\",\"Property1\":\"Value1\",\"Property2\":\"Value2\",\"Property3\":\"Value3\"}")
+
+	httpStatusCode = tableStorageProxy.DeleteTable(table)
+	assertHTTPStatusCode(t, httpStatusCode, 204)
+}
+
+func assertHTTPStatusCode(t *testing.T, httpStatusCode int, expected int) {
+	if httpStatusCode != expected {
+		fmt.Printf("Faild http code other than expected:%d\n", httpStatusCode)
+		t.Fail()
+	}
+}
+
+func assertBody(t *testing.T, body []byte, expected string) {
+	if string(body) != expected {
+		fmt.Printf("Unexpected return:\n%s\nvs\n%s\n", string(body), expected)
+		t.Fail()
+	}
+}
 func TestInsertEntity(t *testing.T) {
 	goHaveStorage := New(Account, Key)
 	tableStorageProxy := goHaveStorage.NewTableStorageProxy()
@@ -236,4 +326,10 @@ type TestEntity struct {
 	Property1    string
 	Property2    string
 	Property3    string
+}
+
+type SmallTestEntity struct {
+	PartitionKey string
+	RowKey       string
+	Property1    string
 }
