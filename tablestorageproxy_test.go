@@ -11,7 +11,6 @@ import (
 
 var Key = ""
 var Account = ""
-var Table = "TestTable"
 
 func TestTableMethods(t *testing.T) {
 	table := "TableForTestingTableMethods"
@@ -155,15 +154,20 @@ func TestGetTableServiceStats(t *testing.T) {
 }
 
 func TestTableACL(t *testing.T) {
+	table := "TableForTestingACLMethods"
+
 	goHaveStorage := NewWithDebug(Account, Key, false)
 	tableStorageProxy := goHaveStorage.NewTableStorageProxy()
+
+	httpStatusCode := tableStorageProxy.CreateTable(table)
+	assertHTTPStatusCode(t, httpStatusCode, 201)
 
 	accessPolicy := gohavestoragecommon.AccessPolicy{Start: "2014-12-31T00:00:00.0000000Z", Expiry: "2114-12-31T00:00:00.0000000Z", Permission: "raud"}
 	signedIdentifier := gohavestoragecommon.SignedIdentifier{Id: "b54df8ab0e2d52759110f48c8d0c19e2", AccessPolicy: accessPolicy}
 	signedIdentifiers := &gohavestoragecommon.SignedIdentifiers{[]gohavestoragecommon.SignedIdentifier{signedIdentifier}}
-	tableStorageProxy.SetTableACL(Table, signedIdentifiers)
+	tableStorageProxy.SetTableACL(table, signedIdentifiers)
 
-	acl, httpStatusCode := tableStorageProxy.GetTableACL(Table)
+	acl, httpStatusCode := tableStorageProxy.GetTableACL(table)
 
 	if httpStatusCode != 200 {
 		fmt.Printf("Faild http code other than expected:%d", httpStatusCode)
@@ -173,6 +177,9 @@ func TestTableACL(t *testing.T) {
 		fmt.Printf("Dump:\n%+v\n\nvs\n\n%+v", signedIdentifiers, acl)
 		t.Fail()
 	}
+
+	httpStatusCode = tableStorageProxy.DeleteTable(table)
+	assertHTTPStatusCode(t, httpStatusCode, 204)
 }
 
 type TestEntity struct {
