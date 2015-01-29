@@ -14,10 +14,12 @@ var Account = ""
 var Table = "TestTable"
 
 func TestTableMethods(t *testing.T) {
+	table := "TableForTestingTableMethods"
+
 	goHaveStorage := NewWithDebug(Account, Key, false)
 	tableStorageProxy := goHaveStorage.NewTableStorageProxy()
 
-	httpStatusCode := tableStorageProxy.CreateTable("TableForTestingTableMethods")
+	httpStatusCode := tableStorageProxy.CreateTable(table)
 	if httpStatusCode != 201 {
 		fmt.Printf("Faild http code other than expected:%d", httpStatusCode)
 		t.Fail()
@@ -32,7 +34,7 @@ func TestTableMethods(t *testing.T) {
 		t.Fail()
 	}
 
-	httpStatusCode = tableStorageProxy.DeleteTable("TableForTestingTableMethods")
+	httpStatusCode = tableStorageProxy.DeleteTable(table)
 	if httpStatusCode != 204 {
 		fmt.Printf("Faild http code other than expected:%d", httpStatusCode)
 		t.Fail()
