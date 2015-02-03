@@ -1,4 +1,4 @@
-package gohavestoragecommon
+package gohaveazurestoragecommon
 
 type SignedIdentifiers struct {
 	SignedIdentifiers []SignedIdentifier `xml:"SignedIdentifier"`
