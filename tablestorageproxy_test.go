@@ -129,10 +129,7 @@ func TestTableServiceProperties(t *testing.T) {
 
 	lastestProperties, _ := tableStorageProxy.GetTableServiceProperties()
 
-	if httpStatusCode != 202 {
-		fmt.Printf("Faild http code other than expected:%d", httpStatusCode)
-		t.Fail()
-	}
+	assertHTTPStatusCode(t, httpStatusCode, 202)
 	if reflect.DeepEqual(properties, lastestProperties) == false {
 		fmt.Printf("Dump:\n%+v\n\nvs\n\n%+v", properties, lastestProperties)
 		t.Fail()
@@ -144,10 +141,7 @@ func TestGetTableServiceStats(t *testing.T) {
 	tableStorageProxy := goHaveStorage.NewTableStorageProxy()
 	stats, httpStatusCode := tableStorageProxy.GetTableServiceStats()
 
-	if httpStatusCode != 200 {
-		fmt.Printf("Faild http code other than expected:%d", httpStatusCode)
-		t.Fail()
-	}
+	assertHTTPStatusCode(t, httpStatusCode, 200)
 	if stats.GeoReplication.Status == "" || stats.GeoReplication.LastSyncTime == "" {
 		t.Fail()
 	}
@@ -169,10 +163,7 @@ func TestTableACL(t *testing.T) {
 
 	acl, httpStatusCode := tableStorageProxy.GetTableACL(table)
 
-	if httpStatusCode != 200 {
-		fmt.Printf("Faild http code other than expected:%d", httpStatusCode)
-		t.Fail()
-	}
+	assertHTTPStatusCode(t, httpStatusCode, 200)
 	if reflect.DeepEqual(signedIdentifiers, acl) == false {
 		fmt.Printf("Dump:\n%+v\n\nvs\n\n%+v", signedIdentifiers, acl)
 		t.Fail()
