@@ -1,4 +1,4 @@
-package gohavestoragecommon
+package gohaveazurestoragecommon
 
 import "encoding/xml"
 

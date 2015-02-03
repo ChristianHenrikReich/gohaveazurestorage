@@ -1,9 +1,9 @@
-package gohavestorage
+package gohaveazurestorage
 
 import (
 	"encoding/json"
 	"fmt"
-	"gohavestorage/gohavestoragecommon"
+	"gohaveazurestorage/gohaveazurestoragecommon"
 	"reflect"
 	"strings"
 	"testing"
@@ -156,9 +156,9 @@ func TestTableACL(t *testing.T) {
 	httpStatusCode := tableStorageProxy.CreateTable(table)
 	assertHTTPStatusCode(t, httpStatusCode, 201)
 
-	accessPolicy := gohavestoragecommon.AccessPolicy{Start: "2014-12-31T00:00:00.0000000Z", Expiry: "2114-12-31T00:00:00.0000000Z", Permission: "raud"}
-	signedIdentifier := gohavestoragecommon.SignedIdentifier{Id: "b54df8ab0e2d52759110f48c8d0c19e2", AccessPolicy: accessPolicy}
-	signedIdentifiers := &gohavestoragecommon.SignedIdentifiers{[]gohavestoragecommon.SignedIdentifier{signedIdentifier}}
+	accessPolicy := gohaveazurestoragecommon.AccessPolicy{Start: "2014-12-31T00:00:00.0000000Z", Expiry: "2114-12-31T00:00:00.0000000Z", Permission: "raud"}
+	signedIdentifier := gohaveazurestoragecommon.SignedIdentifier{Id: "b54df8ab0e2d52759110f48c8d0c19e2", AccessPolicy: accessPolicy}
+	signedIdentifiers := &gohaveazurestoragecommon.SignedIdentifiers{[]gohaveazurestoragecommon.SignedIdentifier{signedIdentifier}}
 	tableStorageProxy.SetTableACL(table, signedIdentifiers)
 
 	acl, httpStatusCode := tableStorageProxy.GetTableACL(table)

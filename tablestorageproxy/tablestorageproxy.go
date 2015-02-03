@@ -4,54 +4,54 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
-	"gohavestorage/gohavestoragecommon"
+	"gohaveazurestorage/gohaveazurestoragecommon"
 	"os"
 	"strings"
 )
 
 type TableStorageProxy struct {
-	http             *gohavestoragecommon.HTTP
+	http             *gohaveazurestoragecommon.HTTP
 	baseUrl          string
 	secondaryBaseUrl string
 }
 
-func New(http *gohavestoragecommon.HTTP) *TableStorageProxy {
+func New(http *gohaveazurestoragecommon.HTTP) *TableStorageProxy {
 	return &TableStorageProxy{http: http}
 }
 
-func (tableStorageProxy *TableStorageProxy) GetTableACL(tableName string) (*gohavestoragecommon.SignedIdentifiers, int) {
+func (tableStorageProxy *TableStorageProxy) GetTableACL(tableName string) (*gohaveazurestoragecommon.SignedIdentifiers, int) {
 	body, httpStatusCode := tableStorageProxy.http.Request("GET", tableName+"?comp=acl", "", nil, false, false, false, false)
 
-	response := &gohavestoragecommon.SignedIdentifiers{}
+	response := &gohaveazurestoragecommon.SignedIdentifiers{}
 	desrializeXML([]byte(body), response)
 
 	return response, httpStatusCode
 }
 
-func (tableStorageProxy *TableStorageProxy) SetTableACL(tableName string, signedIdentifiers *gohavestoragecommon.SignedIdentifiers) int {
+func (tableStorageProxy *TableStorageProxy) SetTableACL(tableName string, signedIdentifiers *gohaveazurestoragecommon.SignedIdentifiers) int {
 	xmlBytes, _ := xml.MarshalIndent(signedIdentifiers, "", "")
 	_, httpStatusCode := tableStorageProxy.http.Request("PUT", tableName+"?comp=acl", "", xmlBytes, false, false, true, false)
 	return httpStatusCode
 }
 
-func (tableStorageProxy *TableStorageProxy) GetTableServiceProperties() (*gohavestoragecommon.StorageServiceProperties, int) {
+func (tableStorageProxy *TableStorageProxy) GetTableServiceProperties() (*gohaveazurestoragecommon.StorageServiceProperties, int) {
 	body, httpStatusCode := tableStorageProxy.http.Request("GET", "?comp=properties", "&restype=service", nil, false, false, true, false)
 
-	response := &gohavestoragecommon.StorageServiceProperties{}
+	response := &gohaveazurestoragecommon.StorageServiceProperties{}
 	desrializeXML([]byte(body), response)
 	return response, httpStatusCode
 }
 
-func (tableStorageProxy *TableStorageProxy) SetTableServiceProperties(storageServiceProperties *gohavestoragecommon.StorageServiceProperties) int {
+func (tableStorageProxy *TableStorageProxy) SetTableServiceProperties(storageServiceProperties *gohaveazurestoragecommon.StorageServiceProperties) int {
 	xmlBytes, _ := xml.MarshalIndent(storageServiceProperties, "", "")
 	_, httpStatusCode := tableStorageProxy.http.Request("PUT", "?comp=properties", "&restype=service", append([]byte("<?xml version=\"1.0\" encoding=\"utf-8\"?>"), xmlBytes...), false, false, false, false)
 	return httpStatusCode
 }
 
-func (tableStorageProxy *TableStorageProxy) GetTableServiceStats() (*gohavestoragecommon.StorageServiceStats, int) {
+func (tableStorageProxy *TableStorageProxy) GetTableServiceStats() (*gohaveazurestoragecommon.StorageServiceStats, int) {
 	body, httpStatusCode := tableStorageProxy.http.Request("GET", "?comp=stats", "&restype=service", nil, false, false, false, true)
 
-	response := &gohavestoragecommon.StorageServiceStats{}
+	response := &gohaveazurestoragecommon.StorageServiceStats{}
 	desrializeXML([]byte(body), response)
 
 	return response, httpStatusCode
