@@ -21,7 +21,7 @@ func NewWithDebug(account string, key string, dumpSessions bool) *GoHaveAzureSto
 	return &GoHaveAzureStorage{account: account, key: decodedKey, dumpSessions: dumpSessions}
 }
 
-func (goHaveAzureStorage *GoHaveAzureStorage) NewTableStorageProxy() *tablestorageproxy.TableStorageProxy {
+func (goHaveAzureStorage *GoHaveAzureStorage) NewTableStorage() *tablestorage.TableStorage {
 	http := gohaveazurestoragecommon.NewHTTP("table", goHaveAzureStorage.account, goHaveAzureStorage.key, goHaveAzureStorage.dumpSessions)
-	return tablestorageproxy.New(http)
+	return tablestorage.New(http)
 }
