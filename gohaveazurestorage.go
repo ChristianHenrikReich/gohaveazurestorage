@@ -3,7 +3,7 @@ package gohaveazurestorage
 import (
 	"encoding/base64"
 	"gohaveazurestorage/gohaveazurestoragecommon"
-	"gohaveazurestorage/tablestorageproxy"
+	"gohaveazurestorage/tablestorage"
 )
 
 type GoHaveAzureStorage struct {
