@@ -12,7 +12,7 @@ Until documentation is written, look at tablestorageproxy_test.go for usage.
 Short example:
 ```Go
 goHaveAzureStorage := NewWithDebug(Account, Key, false) // Setting last 3rd value true, will enable http req/res dumping
-tableStorageProxy := goHaveStorage.NewTableStorageProxy()
+tableStorageProxy := goHaveAzureStorage.NewTableStorageProxy()
 
 httpStatusCode := tableStorageProxy.CreateTable(table)
 ```
@@ -21,7 +21,7 @@ Or without debug:
 
 ```Go
 goHaveAzureStorage := New(Account, Key)
-tableStorageProxy := goHaveStorage.NewTableStorageProxy()
+tableStorageProxy := goHaveAzureStorage.NewTableStorageProxy()
 
 httpStatusCode := tableStorageProxy.CreateTable(table)
 ```
