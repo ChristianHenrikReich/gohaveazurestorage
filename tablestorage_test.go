@@ -15,8 +15,8 @@ var Account = ""
 func TestTableMethods(t *testing.T) {
 	table := "TableForTestingTableMethods"
 
-	goHaveStorage := NewWithDebug(Account, Key, false)
-	tableStorage := goHaveStorage.NewTableStorage()
+	goHaveAzureStorage := NewWithDebug(Account, Key, false)
+	tableStorage := goHaveAzureStorage.NewTableStorage()
 
 	httpStatusCode := tableStorage.CreateTable(table)
 	assertHTTPStatusCode(t, httpStatusCode, 201)
@@ -34,8 +34,8 @@ func TestTableMethods(t *testing.T) {
 func TestEntityMethods(t *testing.T) {
 	table := "TableForTestingEntityMethods"
 
-	goHaveStorage := NewWithDebug(Account, Key, false)
-	tableStorage := goHaveStorage.NewTableStorage()
+	goHaveAzureStorage := NewWithDebug(Account, Key, false)
+	tableStorage := goHaveAzureStorage.NewTableStorage()
 
 	httpStatusCode := tableStorage.CreateTable(table)
 	assertHTTPStatusCode(t, httpStatusCode, 201)
@@ -122,8 +122,8 @@ func assertBody(t *testing.T, body []byte, expected string) {
 }
 
 func TestTableServiceProperties(t *testing.T) {
-	goHaveStorage := NewWithDebug(Account, Key, false)
-	tableStorage := goHaveStorage.NewTableStorage()
+	goHaveAzureStorage := NewWithDebug(Account, Key, false)
+	tableStorage := goHaveAzureStorage.NewTableStorage()
 	properties, _ := tableStorage.GetTableServiceProperties()
 	httpStatusCode := tableStorage.SetTableServiceProperties(properties)
 
@@ -137,8 +137,8 @@ func TestTableServiceProperties(t *testing.T) {
 }
 
 func TestGetTableServiceStats(t *testing.T) {
-	goHaveStorage := NewWithDebug(Account, Key, false)
-	tableStorage := goHaveStorage.NewTableStorage()
+	goHaveAzureStorage := NewWithDebug(Account, Key, false)
+	tableStorage := goHaveAzureStorage.NewTableStorage()
 	stats, httpStatusCode := tableStorage.GetTableServiceStats()
 
 	assertHTTPStatusCode(t, httpStatusCode, 200)
@@ -150,8 +150,8 @@ func TestGetTableServiceStats(t *testing.T) {
 func TestTableACL(t *testing.T) {
 	table := "TableForTestingACLMethods"
 
-	goHaveStorage := NewWithDebug(Account, Key, false)
-	tableStorage := goHaveStorage.NewTableStorage()
+	goHaveAzureStorage := NewWithDebug(Account, Key, false)
+	tableStorage := goHaveAzureStorage.NewTableStorage()
 
 	httpStatusCode := tableStorage.CreateTable(table)
 	assertHTTPStatusCode(t, httpStatusCode, 201)
