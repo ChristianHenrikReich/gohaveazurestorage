@@ -12,24 +12,24 @@ Until documentation is written, look at tablestorageproxy_test.go for usage.
 Short example:
 ```Go
 goHaveAzureStorage := NewWithDebug(Account, Key, false) // Setting last 3rd value true, will enable http req/res dumping
-tableStorageProxy := goHaveAzureStorage.NewTableStorageProxy()
+tableStorage := goHaveAzureStorage.NewTableStorage()
 
-httpStatusCode := tableStorageProxy.CreateTable(table)
+httpStatusCode := tableStorage.CreateTable(table)
 ```
 
 Or without debug:
 
 ```Go
 goHaveAzureStorage := New(Account, Key)
-tableStorageProxy := goHaveAzureStorage.NewTableStorageProxy()
+tableStorage := goHaveAzureStorage.NewTableStorageProxy()
 
-httpStatusCode := tableStorageProxy.CreateTable(table)
+httpStatusCode := tableStorage.CreateTable(table)
 ```
 
 # Road map
-* Table Storage Proxy
+* Table Storage
   - Implement preflight command
   - Implement support for shared keys
-* Get started on Blob Storage Proxy
-* Get started on Queue Storage Proxy
-* Get started on File Storage Proxy
+* Get started on Blob Storage
+* Get started on Queue Storage
+* Get started on File Storage
