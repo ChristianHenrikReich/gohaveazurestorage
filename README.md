@@ -7,23 +7,40 @@ go get github.com/ChristianHenrikReich/gohaveazurestorage
 ```
 
 # Get Started
-Until documentation is written, look at tablestorageproxy_test.go for usage.
-
-Short example:
-```Go
-goHaveAzureStorage := NewWithDebug(Account, Key, false) // Setting last 3rd value true, will enable http req/res dumping
-tableStorage := goHaveAzureStorage.NewTableStorage()
-
-httpStatusCode := tableStorage.CreateTable(table)
-```
-
-Or without debug:
+More detailed information about usage is being written in the [Wiki](https://github.com/ChristianHenrikReich/gohaveazurestorage/wiki/1.-Home), and tablestorageproxy_test.go is also a good source for information.
 
 ```Go
-goHaveAzureStorage := New(Account, Key)
-tableStorage := goHaveAzureStorage.NewTableStorageProxy()
 
-httpStatusCode := tableStorage.CreateTable(table)
+package main
+
+import (
+	"fmt"
+	"gohaveazurestorage"
+)
+
+//Either the primary or the secondary key found on Azure Portal
+var key = "PrimaryOrSecondaryKey"
+
+//Storage account name
+var account = "Account"
+
+func main() {
+	// Create an instance of the lib
+	goHaveAzureStorage := gohaveazurestorage.New(account, key)
+  
+  // Example with debug, if last parameter is true then request/response sessions dumps is written to console
+  //goHaveAzureStorage := gohaveazurestorage.NewWithDebug(account, key, true)
+
+	// From the lib instace, we can create multiple client instances
+	tableStorage := goHaveAzureStorage.NewTableStorage()
+
+	//Creating a table
+	httpStatusCode := tableStorage.CreateTable("Table")
+	if httpStatusCode != 201 {
+		fmt.Println("Create table error")
+	}
+}
+
 ```
 
 # Road map
