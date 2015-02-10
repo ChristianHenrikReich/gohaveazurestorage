@@ -16,7 +16,7 @@ func TestTableMethods(t *testing.T) {
 	table := "TableForTestingTableMethods"
 
 	goHaveAzureStorage := NewWithDebug(Account, Key, false)
-	tableStorage := goHaveAzureStorage.NewTableStorage()
+	tableStorage := goHaveAzureStorage.TableStorage()
 
 	httpStatusCode := tableStorage.CreateTable(table)
 	assertHTTPStatusCode(t, httpStatusCode, 201)
@@ -35,7 +35,7 @@ func TestEntityMethods(t *testing.T) {
 	table := "TableForTestingEntityMethods"
 
 	goHaveAzureStorage := NewWithDebug(Account, Key, false)
-	tableStorage := goHaveAzureStorage.NewTableStorage()
+	tableStorage := goHaveAzureStorage.TableStorage()
 
 	httpStatusCode := tableStorage.CreateTable(table)
 	assertHTTPStatusCode(t, httpStatusCode, 201)
@@ -123,7 +123,7 @@ func assertBody(t *testing.T, body []byte, expected string) {
 
 func TestTableServiceProperties(t *testing.T) {
 	goHaveAzureStorage := NewWithDebug(Account, Key, false)
-	tableStorage := goHaveAzureStorage.NewTableStorage()
+	tableStorage := goHaveAzureStorage.TableStorage()
 	properties, _ := tableStorage.GetTableServiceProperties()
 	httpStatusCode := tableStorage.SetTableServiceProperties(properties)
 
@@ -138,7 +138,7 @@ func TestTableServiceProperties(t *testing.T) {
 
 func TestGetTableServiceStats(t *testing.T) {
 	goHaveAzureStorage := NewWithDebug(Account, Key, false)
-	tableStorage := goHaveAzureStorage.NewTableStorage()
+	tableStorage := goHaveAzureStorage.TableStorage()
 	stats, httpStatusCode := tableStorage.GetTableServiceStats()
 
 	assertHTTPStatusCode(t, httpStatusCode, 200)
@@ -151,7 +151,7 @@ func TestTableACL(t *testing.T) {
 	table := "TableForTestingACLMethods"
 
 	goHaveAzureStorage := NewWithDebug(Account, Key, false)
-	tableStorage := goHaveAzureStorage.NewTableStorage()
+	tableStorage := goHaveAzureStorage.TableStorage()
 
 	httpStatusCode := tableStorage.CreateTable(table)
 	assertHTTPStatusCode(t, httpStatusCode, 201)
