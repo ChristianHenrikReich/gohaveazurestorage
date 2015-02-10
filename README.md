@@ -42,11 +42,14 @@ func main() {
 }
 
 ```
+# Note on running the test
+The tests works, but they sometimes falls depending on the connection to Azure.
 
 # Road map
 * Table Storage
   - Implement preflight command
   - Implement support for shared keys
+  - Implement support for CORS
 * Get started on Blob Storage
 * Get started on Queue Storage
 * Get started on File Storage
