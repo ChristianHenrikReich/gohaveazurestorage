@@ -7,7 +7,7 @@ go get github.com/ChristianHenrikReich/gohaveazurestorage
 ```
 
 # Get Started
-More detailed information about usage is being written in the [Wiki](https://github.com/ChristianHenrikReich/gohaveazurestorage/wiki/1.-Home), and tablestorageproxy_test.go is also a good source for information.
+More detailed information about usage is being written in the [Wiki](https://github.com/ChristianHenrikReich/gohaveazurestorage/wiki/1.-Home). [Tablestorageproxy_test.go](https://github.com/ChristianHenrikReich/gohaveazurestorage/blob/master/tablestorage_test.go) is also a good source for information.
 
 ```Go
 
