@@ -2,6 +2,7 @@ package gohaveazurestorage
 
 import (
 	"encoding/base64"
+	"gohaveazurestorage/blobstorage"
 	"gohaveazurestorage/gohaveazurestoragecommon"
 	"gohaveazurestorage/tablestorage"
 )
@@ -24,4 +25,9 @@ func NewWithDebug(account string, key string, dumpSessions bool) (azureStorage *
 func (goHaveAzureStorage *GoHaveAzureStorage) TableStorage() (tableStorage *tablestorage.TableStorage) {
 	http := gohaveazurestoragecommon.NewHTTP("table", goHaveAzureStorage.account, goHaveAzureStorage.key, goHaveAzureStorage.dumpSessions)
 	return tablestorage.New(http)
+}
+
+func (goHaveAzureStorage *GoHaveAzureStorage) BlobStorage() (tableStorage *blobstorage.BlobStorage) {
+	http := gohaveazurestoragecommon.NewHTTP("blob", goHaveAzureStorage.account, goHaveAzureStorage.key, goHaveAzureStorage.dumpSessions)
+	return blobstorage.New(http)
 }
