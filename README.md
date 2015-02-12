@@ -32,7 +32,7 @@ func main() {
   //goHaveAzureStorage := gohaveazurestorage.NewWithDebug(account, key, true)
 
 	// From the lib instace, we can create multiple client instances
-	tableStorage := goHaveAzureStorage.NewTableStorage()
+	tableStorage := goHaveAzureStorage.TableStorage()
 
 	//Creating a table
 	httpStatusCode := tableStorage.CreateTable("Table")
