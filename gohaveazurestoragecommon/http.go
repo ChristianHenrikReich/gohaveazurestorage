@@ -32,7 +32,8 @@ func NewHTTP(storageType string, account string, key []byte, dumpSessions bool) 
 }
 
 func (storagehttp *HTTP) Request(httpVerb string, target string, query string, json []byte, useIfMatch bool, useAccept bool, useContentTypeXML bool, useSecondary bool) ([]byte, int) {
-	xmsdate, Authentication := storagehttp.calculateDateAndAuthentication(target)
+	headers := map[string]string{}
+	storagehttp.calculateDateAndAuthentication(httpVerb, target, headers)
 
 	baseURL := ""
 	if useSecondary {
@@ -61,9 +62,9 @@ func (storagehttp *HTTP) Request(httpVerb string, target string, query string, j
 		request.Header.Set("Accept", "application/json;odata=nometadata")
 	}
 
-	request.Header.Set("x-ms-date", xmsdate)
-	request.Header.Set("x-ms-version", "2013-08-15")
-	request.Header.Set("Authorization", Authentication)
+	for key, value := range headers {
+		request.Header.Set(key, value)
+	}
 
 	response, err := client.Do(request)
 	if err != nil {
@@ -89,11 +90,14 @@ func (storagehttp *HTTP) Request(httpVerb string, target string, query string, j
 	return contents, response.StatusCode
 }
 
-func (storagehttp *HTTP) calculateDateAndAuthentication(target string) (string, string) {
+func (storagehttp *HTTP) calculateDateAndAuthentication(httpVerb string, target string, headers map[string]string) {
 	xmsdate := strings.Replace(time.Now().UTC().Add(-time.Minute).Format(time.RFC1123), "UTC", "GMT", -1)
-	SignatureString := xmsdate + "\n/" + storagehttp.account + "/" + target
-	Authentication := "SharedKeyLite " + storagehttp.account + ":" + computeHmac256(SignatureString, storagehttp.key)
-	return xmsdate, Authentication
+
+	headers["x-ms-date"] = xmsdate
+	headers["x-ms-version"] = "2013-08-15"
+
+	signatureString := xmsdate + "\n/" + storagehttp.account + "/" + target
+	headers["Authorization"] = "SharedKeyLite " + storagehttp.account + ":" + computeHmac256(signatureString, storagehttp.key)
 }
 
 func (storagehttp *HTTP) calculateDateAndAuthenticationForBlobs(httpVerb string, target string, headers map[string]string) {
