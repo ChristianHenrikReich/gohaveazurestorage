@@ -31,8 +31,7 @@ func NewHTTP(storageType string, account string, key []byte, dumpSessions bool) 
 	return http
 }
 
-func (storagehttp *HTTP) Request(httpVerb string, target string, query string, json []byte, useIfMatch bool, useAccept bool, useContentTypeXML bool, useSecondary bool) ([]byte, int) {
-	headers := map[string]string{}
+func (storagehttp *HTTP) Request(httpVerb string, target string, query string, json []byte, headers map[string]string, useAccept bool, useContentTypeXML bool, useSecondary bool) ([]byte, int) {
 	storagehttp.calculateDateAndAuthentication(httpVerb, target, headers)
 
 	baseURL := ""
@@ -52,10 +51,6 @@ func (storagehttp *HTTP) Request(httpVerb string, target string, query string, j
 
 	if useContentTypeXML {
 		request.Header.Set("Content-Type", "application/xml")
-	}
-
-	if useIfMatch {
-		request.Header.Set("If-Match", "*")
 	}
 
 	if useAccept {
