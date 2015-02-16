@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"os"
+	"sort"
 	"strings"
 	"time"
 )
@@ -93,6 +94,27 @@ func (storagehttp *HTTP) calculateDateAndAuthentication(target string) (string, 
 	SignatureString := xmsdate + "\n/" + storagehttp.account + "/" + target
 	Authentication := "SharedKeyLite " + storagehttp.account + ":" + computeHmac256(SignatureString, storagehttp.key)
 	return xmsdate, Authentication
+}
+
+func (storagehttp *HTTP) calculateDateAndAuthenticationForBlobs(httpVerb string, target string, headers map[string]string) {
+	headers["x-ms-date"] = strings.Replace(time.Now().UTC().Add(-time.Minute).Format(time.RFC1123), "UTC", "GMT", -1)
+	headers["x-ms-version"] = "2013-08-15"
+
+	var keys []string
+	for key := range headers {
+		if strings.HasPrefix(key, "x-ms-") {
+			keys = append(keys, key)
+		}
+	}
+	sort.Strings(keys)
+
+	conicalHeaders := ""
+	for _, key := range keys {
+		conicalHeaders += key + ":" + headers[key] + "\n"
+	}
+
+	signatureString := httpVerb + "\n\n\n\n" + conicalHeaders + "/" + storagehttp.account + "/" + target
+	headers["Authorization"] = "SharedKeyLite " + storagehttp.account + ":" + computeHmac256(signatureString, storagehttp.key)
 }
 
 func computeHmac256(message string, key []byte) string {
