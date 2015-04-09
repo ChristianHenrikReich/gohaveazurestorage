@@ -23,3 +23,17 @@ func TestContainerCalls(t *testing.T) {
 	httpStatusCode = blobStorage.DeleteContainer(container)
 	assertHTTPStatusCode(t, httpStatusCode, 202)
 }
+
+func TestBlobCalls(t *testing.T) {
+	container := "containerfortesting"
+
+	goHaveAzureStorage := NewWithDebug(Account, Key, true)
+	blobStorage := goHaveAzureStorage.BlobStorage()
+
+	httpStatusCode := blobStorage.CreateContainer(container)
+	assertHTTPStatusCode(t, httpStatusCode, 201)
+
+
+	httpStatusCode = blobStorage.DeleteContainer(container)
+	assertHTTPStatusCode(t, httpStatusCode, 202)
+}
