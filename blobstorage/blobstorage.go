@@ -29,3 +29,7 @@ func (blobStorage *BlobStorage) ListContainers() (body []byte, httpStatusCode in
 func (blobStorage *BlobStorage) GetContainerProperties(containerName string) (body []byte, httpStatusCode int) {
 	return blobStorage.http.Request("GET", containerName, "?restype=container", nil, map[string]string{}, true, false, false)
 }
+
+func (blobStorage *BlobStorage) GetContainerMetadata(containerName string) (body []byte, httpStatusCode int) {
+	return blobStorage.http.Request("GET", containerName+"?comp=metadata", "&restype=container", nil, map[string]string{}, true, false, false)
+}
