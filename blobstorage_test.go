@@ -11,6 +11,10 @@ func TestRefactor(t *testing.T) {
 	httpStatusCode := blobStorage.CreateContainer(container)
 	assertHTTPStatusCode(t, httpStatusCode, 201)
 
+	_, httpStatusCode = blobStorage.ListContainers()
+	assertHTTPStatusCode(t, httpStatusCode, 200)
+
+
 	httpStatusCode = blobStorage.DeleteContainer(container)
 	assertHTTPStatusCode(t, httpStatusCode, 202)
 }

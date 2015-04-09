@@ -21,3 +21,7 @@ func (blobStorage *BlobStorage) DeleteContainer(containerName string) (httpStatu
 	_, httpStatusCode = blobStorage.http.Request("DELETE", containerName, "?restype=container", nil, map[string]string{}, false, false, false)
 	return httpStatusCode
 }
+
+func (blobStorage *BlobStorage) ListContainers() (body []byte, httpStatusCode int) {
+	return blobStorage.http.Request("GET", "?comp=list", "", nil, map[string]string{}, true, false, false)
+}
