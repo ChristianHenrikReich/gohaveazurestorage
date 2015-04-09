@@ -3,7 +3,7 @@ package gohaveazurestorage
 import "testing"
 
 func TestRefactor(t *testing.T) {
-	container := "ContainerForTestingACLMethods"
+	container := "containerfortesting"
 
 	goHaveAzureStorage := NewWithDebug(Account, Key, true)
 	blobStorage := goHaveAzureStorage.BlobStorage()
