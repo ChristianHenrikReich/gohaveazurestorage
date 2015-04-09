@@ -33,6 +33,8 @@ func TestBlobCalls(t *testing.T) {
 	httpStatusCode := blobStorage.CreateContainer(container)
 	assertHTTPStatusCode(t, httpStatusCode, 201)
 
+	_, httpStatusCode = blobStorage.ListBlobs(container)
+	assertHTTPStatusCode(t, httpStatusCode, 201)
 
 	httpStatusCode = blobStorage.DeleteContainer(container)
 	assertHTTPStatusCode(t, httpStatusCode, 202)
