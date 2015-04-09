@@ -23,11 +23,11 @@ func NewWithDebug(account string, key string, dumpSessions bool) (azureStorage *
 }
 
 func (goHaveAzureStorage *GoHaveAzureStorage) TableStorage() (tableStorage *tablestorage.TableStorage) {
-	http := gohaveazurestoragecommon.NewHTTP("table", goHaveAzureStorage.account, goHaveAzureStorage.key, goHaveAzureStorage.dumpSessions)
+	http := gohaveazurestoragecommon.NewHTTP("table", goHaveAzureStorage.account, goHaveAzureStorage.key, goHaveAzureStorage.dumpSessions, gohaveazurestoragecommon.CalculateDateAndAuthenticationForTableStorage)
 	return tablestorage.New(http)
 }
 
 func (goHaveAzureStorage *GoHaveAzureStorage) BlobStorage() (tableStorage *blobstorage.BlobStorage) {
-	http := gohaveazurestoragecommon.NewHTTP("blob", goHaveAzureStorage.account, goHaveAzureStorage.key, goHaveAzureStorage.dumpSessions)
+	http := gohaveazurestoragecommon.NewHTTP("blob", goHaveAzureStorage.account, goHaveAzureStorage.key, goHaveAzureStorage.dumpSessions, gohaveazurestoragecommon.CalculateDateAndAuthenticationForBlobStorage)
 	return blobstorage.New(http)
 }

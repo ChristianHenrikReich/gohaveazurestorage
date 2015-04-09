@@ -15,16 +15,19 @@ import (
 	"time"
 )
 
+type CalculateDateAndHeaderAuthentication func(storagehttp *HTTP, httpVerb string, target string, headers map[string]string)
+
 type HTTP struct {
-	baseURL          string
-	secondaryBaseURL string
-	account          string
-	key              []byte
-	dumpSessions     bool
+	baseURL                              string
+	secondaryBaseURL                     string
+	account                              string
+	key                                  []byte
+	dumpSessions                         bool
+	calculateDateAndHeaderAuthentication CalculateDateAndHeaderAuthentication
 }
 
-func NewHTTP(storageType string, account string, key []byte, dumpSessions bool) *HTTP {
-	http := &HTTP{account: account, key: key, dumpSessions: dumpSessions}
+func NewHTTP(storageType string, account string, key []byte, dumpSessions bool, calculateDateAndHeaderAuthentication CalculateDateAndHeaderAuthentication) *HTTP {
+	http := &HTTP{account: account, key: key, dumpSessions: dumpSessions, calculateDateAndHeaderAuthentication: calculateDateAndHeaderAuthentication}
 	http.baseURL = "https://" + account + "." + storageType + ".core.windows.net/"
 	http.secondaryBaseURL = "https://" + account + "-secondary." + storageType + ".core.windows.net/"
 
@@ -32,7 +35,7 @@ func NewHTTP(storageType string, account string, key []byte, dumpSessions bool) 
 }
 
 func (storagehttp *HTTP) Request(httpVerb string, target string, query string, json []byte, headers map[string]string, useAccept bool, useContentTypeXML bool, useSecondary bool) ([]byte, int) {
-	storagehttp.calculateDateAndAuthentication(httpVerb, target, headers)
+	storagehttp.calculateDateAndHeaderAuthentication(storagehttp, httpVerb, target, headers)
 
 	baseURL := ""
 	if useSecondary {
@@ -85,7 +88,7 @@ func (storagehttp *HTTP) Request(httpVerb string, target string, query string, j
 	return contents, response.StatusCode
 }
 
-func (storagehttp *HTTP) calculateDateAndAuthentication(httpVerb string, target string, headers map[string]string) {
+func CalculateDateAndAuthenticationForTableStorage(storagehttp *HTTP, httpVerb string, target string, headers map[string]string) {
 	xmsdate := strings.Replace(time.Now().UTC().Add(-time.Minute).Format(time.RFC1123), "UTC", "GMT", -1)
 
 	headers["x-ms-date"] = xmsdate
@@ -95,7 +98,7 @@ func (storagehttp *HTTP) calculateDateAndAuthentication(httpVerb string, target 
 	headers["Authorization"] = "SharedKeyLite " + storagehttp.account + ":" + computeHmac256(signatureString, storagehttp.key)
 }
 
-func (storagehttp *HTTP) calculateDateAndAuthenticationForBlobs(httpVerb string, target string, headers map[string]string) {
+func CalculateDateAndAuthenticationForBlobStorage(storagehttp *HTTP, httpVerb string, target string, headers map[string]string) {
 	headers["x-ms-date"] = strings.Replace(time.Now().UTC().Add(-time.Minute).Format(time.RFC1123), "UTC", "GMT", -1)
 	headers["x-ms-version"] = "2013-08-15"
 
