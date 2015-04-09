@@ -2,7 +2,7 @@ package gohaveazurestorage
 
 import "testing"
 
-func TestRefactor(t *testing.T) {
+func TestContainerCalls(t *testing.T) {
 	container := "containerfortesting"
 
 	goHaveAzureStorage := NewWithDebug(Account, Key, true)
