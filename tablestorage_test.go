@@ -109,7 +109,7 @@ func TestEntityMethods(t *testing.T) {
 
 func assertHTTPStatusCode(t *testing.T, httpStatusCode int, expected int) {
 	if httpStatusCode != expected {
-		fmt.Printf("Faild http code other than expected:%d\n", httpStatusCode)
+		fmt.Printf("Faild http code %d other than expected:%d\n", httpStatusCode, expected)
 		t.Fail()
 	}
 }
