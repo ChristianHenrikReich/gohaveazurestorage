@@ -2,8 +2,9 @@ package gohaveazurestorage
 
 import (
 	"encoding/base64"
-	"gohaveazurestorage/gohaveazurestoragecommon"
-	"gohaveazurestorage/tablestorage"
+
+	"github.com/ChristianHenrikReich/gohaveazurestorage/gohaveazurestoragecommon"
+	"github.com/ChristianHenrikReich/gohaveazurestorage/tablestorage"
 )
 
 type GoHaveAzureStorage struct {

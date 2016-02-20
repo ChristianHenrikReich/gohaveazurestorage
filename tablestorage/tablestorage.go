@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
-	"gohaveazurestorage/gohaveazurestoragecommon"
 	"os"
 	"strings"
+
+	"github.com/ChristianHenrikReich/gohaveazurestorage/gohaveazurestoragecommon"
 )
 
 type TableStorage struct {
