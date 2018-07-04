@@ -9,7 +9,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httputil"
-	"os"
 	"strings"
 	"time"
 )
@@ -66,8 +65,7 @@ func (storagehttp *HTTP) Request(httpVerb string, target string, query string, j
 
 	response, err := client.Do(request)
 	if err != nil {
-		fmt.Printf("%s", err)
-		os.Exit(1)
+		return nil, http.StatusServiceUnavailable
 	}
 
 	if storagehttp.dumpSessions {
@@ -81,8 +79,7 @@ func (storagehttp *HTTP) Request(httpVerb string, target string, query string, j
 
 	contents, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		fmt.Printf("%s", err)
-		os.Exit(1)
+		return nil, http.StatusUnprocessableEntity
 	}
 
 	return contents, response.StatusCode
