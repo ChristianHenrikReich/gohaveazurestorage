@@ -19,14 +19,23 @@ type HTTP struct {
 	account          string
 	key              []byte
 	dumpSessions     bool
+	client           *http.Client
 }
 
 func NewHTTP(storageType string, account string, key []byte, dumpSessions bool) *HTTP {
-	http := &HTTP{account: account, key: key, dumpSessions: dumpSessions}
-	http.baseURL = "https://" + account + "." + storageType + ".core.windows.net/"
-	http.secondaryBaseURL = "https://" + account + "-secondary." + storageType + ".core.windows.net/"
+	h := &HTTP{account: account, key: key, dumpSessions: dumpSessions}
+	h.baseURL = "https://" + account + "." + storageType + ".core.windows.net/"
+	h.secondaryBaseURL = "https://" + account + "-secondary." + storageType + ".core.windows.net/"
+	h.client = &http.Client{
+		Transport: &http.Transport{
+			MaxIdleConns:        2000,
+			MaxIdleConnsPerHost: 2000,
+			TLSHandshakeTimeout: 10 * time.Second,
+		},
+		Timeout: 15 * time.Second,
+	}
 
-	return http
+	return h
 }
 
 func (storagehttp *HTTP) Request(httpVerb string, target string, query string, json []byte, useIfMatch bool, useAccept bool, useContentTypeXML bool, useSecondary bool) ([]byte, int) {
@@ -39,7 +48,7 @@ func (storagehttp *HTTP) Request(httpVerb string, target string, query string, j
 		baseURL = storagehttp.baseURL
 	}
 
-	client := &http.Client{}
+	client := storagehttp.client
 	request, _ := http.NewRequest(httpVerb, baseURL+target+query, bytes.NewBuffer(json))
 
 	if json != nil {
@@ -67,6 +76,7 @@ func (storagehttp *HTTP) Request(httpVerb string, target string, query string, j
 	if err != nil {
 		return nil, http.StatusServiceUnavailable
 	}
+	defer response.Body.Close()
 
 	if storagehttp.dumpSessions {
 		responseDump, _ := httputil.DumpResponse(response, true)
